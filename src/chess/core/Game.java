@@ -28,46 +28,42 @@ public class Game {
         // Populate Pawns
         tempEmpty();
         whitePopulate();
-        //blackPopulate();
+        blackPopulate();
 
     }
 
     private void tempEmpty() {
-        int x = 0;
-        int y = 0;
-
-        for (x = 0; x < this.board.length - 1; x++) {
-            board[x][y] = null;
-            for (y = 0; y < this.board.length - 1; y++) {
+        for (int x = 0; x < this.board.length - 1; x++) {
+            for (int y = 0; y < this.board.length - 1; y++) {
                 board[x][y] = null;
             }
         }
     }
 
     private void whitePopulate() {
-        int x = 5;
+        int x = 6;
         int y;
         //Pawns
         for (y = 0; y < 8; y++) {
             this.board[x][y] = new Pawn(x, y, "white", "pawn");
         }
         //Rooks
-        this.board[6][0] = new Rook(6, 0, "white", "rook");
-        this.board[6][7] = new Rook(6, 7, "white", "rook");
+        this.board[7][0] = new Rook(6, 0, "white", "rook");
+        this.board[7][7] = new Rook(6, 7, "white", "rook");
 
         //Knights
-        this.board[6][1] = new Knight(6, 1, "white", "knight");
-        this.board[6][6] = new Knight(6, 6, "white", "knight");
+        this.board[7][1] = new Knight(6, 1, "white", "knight");
+        this.board[7][6] = new Knight(6, 6, "white", "knight");
 
         //Bishops
-        this.board[6][2] = new Bishop(6, 2, "white", "bishop");
-        this.board[6][5] = new Bishop(6, 5, "white", "bishop");
+        this.board[7][2] = new Bishop(6, 2, "white", "bishop");
+        this.board[7][5] = new Bishop(6, 5, "white", "bishop");
 
         //King
-        this.board[6][4] = new King(6, 4, "white", "king");
+        this.board[7][4] = new King(6, 4, "white", "king");
 
         //Queen
-        this.board[6][5] = new Queen(6, 5, "white", "queen");
+        this.board[7][3] = new Queen(6, 5, "white", "queen");
 
     }
 
@@ -99,66 +95,12 @@ public class Game {
     }
 
     public void printBoard() {
-        int x;
-        int y = 0;
 
         String type;
         //String color;
 
-        for (x = 0; x < this.board.length - 1; x++) {
-            if (this.board[x][y] != null) {
-
-                type = this.board[x][y].getType();
-                switch (type) {
-                    case "pawn":
-                        if ("black".equals(this.board[x][y].getColor())) {
-                            System.out.print(" |PB| ");
-                        } else {
-                            System.out.print(" |PW| ");
-                        }
-                        break;
-                    case "bishop":
-                        if ("black".equals(this.board[x][y].getColor())) {
-                            System.out.print(" |BB| ");
-                        } else {
-                            System.out.print(" |BW| ");
-                        }
-                        break;
-                    case "king":
-                        if ("black".equals(this.board[x][y].getColor())) {
-                            System.out.print(" |KB| ");
-                        } else {
-                            System.out.print(" |KW| ");
-                        }
-                        break;
-                    case "knight":
-                        if ("black".equals(this.board[x][y].getColor())) {
-                            System.out.print(" |HB| ");
-                        } else {
-                            System.out.print(" |HW| ");
-                        }
-                        break;
-                    case "queen":
-                        if ("black".equals(this.board[x][y].getColor())) {
-                            System.out.print(" |QB| ");
-                        } else {
-                            System.out.print(" |QW| ");
-                        }
-                        break;
-                    case "rook":
-                        if ("black".equals(this.board[x][y].getColor())) {
-                            System.out.print(" |RB| ");
-                        } else {
-                            System.out.print(" |RW| ");
-                        }
-                        break;
-
-                }
-            } else {
-                System.out.print(" |NN| ");
-            }
-
-            for (y = 0; y < this.board.length - 1; y++) {
+        for (int x = 0; x < this.board.length; x++) {
+            for (int y = 0; y < this.board.length; y++) {
                 if (this.board[x][y] != null) {
                     type = this.board[x][y].getType();
                     switch (type) {
