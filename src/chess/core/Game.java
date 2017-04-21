@@ -26,19 +26,12 @@ public class Game {
 
     public void initialPopulate() {
         // Populate Pawns
-        tempEmpty();
+
         whitePopulate();
         blackPopulate();
 
     }
 
-    private void tempEmpty() {
-        for (int x = 0; x < this.board.length - 1; x++) {
-            for (int y = 0; y < this.board.length - 1; y++) {
-                board[x][y] = null;
-            }
-        }
-    }
 
     private void whitePopulate() {
         int x = 6;
