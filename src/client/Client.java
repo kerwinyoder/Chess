@@ -21,6 +21,7 @@ import java.util.Scanner;
 public class Client {
 
     private int port;
+    private LobbyGUI gui;
     private ObjectInputStream in;
     private Random portSelector;
     private Scanner kbinput;
@@ -31,6 +32,9 @@ public class Client {
         portSelector = new Random();
         port = (portSelector.nextInt(7000) + 1000);
         socket = new Socket();
+        System.out.println("This client is at: " + InetAddress.getLocalHost());
+        gui = new LobbyGUI();
+        gui.setVisible(true);
     }
 
     public void run() throws IOException, ClassNotFoundException {
@@ -43,8 +47,9 @@ public class Client {
 
         while (true) {
             in = new ObjectInputStream(socket.getInputStream());
-            LinkedList<Socket> players = (LinkedList) in.readObject();
+            LinkedList<String> players = (LinkedList) in.readObject();
             if (!players.isEmpty()) {
+                gui.updateList(players);
                 System.out.println(players.toString());
             }
         }

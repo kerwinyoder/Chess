@@ -21,21 +21,21 @@ import java.util.concurrent.Executors;
  * @author frost
  */
 public class Server {
-    
+
     private boolean running = true;
     private int portNum;
     private ObjectOutputStream out;
     private ExecutorService threadPool;
     private LinkedList<Socket> addresses;
     private ServerSocket listener;
-    
+
     public Server() throws IOException {
         portNum = 5000;
         listener = new ServerSocket(portNum);
         addresses = new LinkedList<>();
         threadPool = Executors.newCachedThreadPool();
     }
-    
+
     public void run() throws IOException {
         System.out.println("The server is now running at " + InetAddress.getLocalHost() + ":" + listener.getLocalPort());
         while (running) {
@@ -46,17 +46,19 @@ public class Server {
             }
         }
     }
-    
+
     /**
-     * Send a list of addresses from clients connected to the server to each connected client
-     * @throws IOException 
+     * Send a list of addresses from clients connected to the server to each
+     * connected client
+     *
+     * @throws IOException
      */
     private void sendList() throws IOException {
         for (Socket s : addresses) {
             out = new ObjectOutputStream(s.getOutputStream());
             LinkedList<String> ips = new LinkedList();
             for (int i = 0; i < addresses.size(); i++) {
-                if (s.getInetAddress().equals(addresses.get(i))) {
+                if (!s.getInetAddress().equals(addresses.get(i).getInetAddress())) {
                     ips.add(addresses.get(i).getInetAddress().toString());
                 }
             }
@@ -64,5 +66,5 @@ public class Server {
             out.flush();
         }
     }
-    
+
 }
