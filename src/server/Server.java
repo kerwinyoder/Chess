@@ -76,6 +76,16 @@ public class Server {
         }
     }
 
+    private void sendRequest() {
+
+    }
+
+    /**
+     * Sends a heartbeat message to a client to validate if the connection is
+     * still active.&nbsp If it is not, the client is removed from the list.
+     *
+     * @throws IOException
+     */
     private void checkDisconnects() throws IOException {
         for (Socket s : addresses) {
             boolean reachable = true;
