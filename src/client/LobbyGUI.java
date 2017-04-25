@@ -82,6 +82,7 @@ public class LobbyGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         String ip = jList1.getSelectedValue().toString();
         System.out.println("Sending request to: " + ip);
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

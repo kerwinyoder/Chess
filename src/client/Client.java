@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
@@ -32,7 +33,6 @@ public class Client {
         portSelector = new Random();
         port = (portSelector.nextInt(7000) + 1000);
         socket = new Socket();
-        System.out.println("This client is at: " + InetAddress.getLocalHost());
         gui = new LobbyGUI();
         gui.setVisible(true);
     }
@@ -43,15 +43,35 @@ public class Client {
         System.out.print("Please enter the port number of the server: ");
         int port = kbinput.nextInt();
         InetSocketAddress sa = new InetSocketAddress(ip, port);
-        socket.connect(sa);
+        try {
+            socket.connect(sa);
+        } catch (SocketException se) {
+            close();
+        }
 
         while (true) {
             in = new ObjectInputStream(socket.getInputStream());
-            LinkedList<String> players = (LinkedList) in.readObject();
+            Object rec = in.readObject();
+            LinkedList<String> players = new LinkedList();
+            if (!rec.equals(1)) {
+                players = (LinkedList) rec;
+            }
             if (!players.isEmpty()) {
                 gui.updateList(players);
-                System.out.println(players.toString());
             }
+        }
+    }
+
+    private void close() {
+        boolean setToClose = true;
+        try {
+            socket.close();
+        } catch (IOException ioe) {
+            System.err.println("The socket could not be closed.");
+            setToClose = false;
+        }
+        if (setToClose) {
+            System.exit(0);
         }
     }
 

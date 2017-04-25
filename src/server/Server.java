@@ -9,8 +9,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -32,6 +33,7 @@ public class Server {
     public Server() throws IOException {
         portNum = 5000;
         listener = new ServerSocket(portNum);
+        listener.setSoTimeout(10);
         addresses = new LinkedList<>();
         threadPool = Executors.newCachedThreadPool();
     }
@@ -39,10 +41,17 @@ public class Server {
     public void run() throws IOException {
         System.out.println("The server is now running at " + InetAddress.getLocalHost() + ":" + listener.getLocalPort());
         while (running) {
-            Socket client = listener.accept();
-            if (!addresses.contains(client)) {
-                addresses.add(client);
-                sendList();
+            Socket client = null;
+            try {
+                client = listener.accept();
+            } catch (SocketTimeoutException ste) {
+                checkDisconnects();
+            }
+            if (client != null) {
+                if (!addresses.contains(client)) {
+                    addresses.add(client);
+                    sendList();
+                }
             }
         }
     }
@@ -64,6 +73,26 @@ public class Server {
             }
             out.writeObject(ips);
             out.flush();
+        }
+    }
+
+    private void checkDisconnects() throws IOException {
+        for (Socket s : addresses) {
+            boolean reachable = true;
+            try {
+                out = new ObjectOutputStream(s.getOutputStream());
+                out.writeObject(1);
+            } catch (IOException ioe) {
+                reachable = false;
+            }
+            if (!reachable) {
+                try {
+                    s.close();
+                } catch (IOException ioe) {
+                    System.err.println("Socket could not be closed");
+                }
+                addresses.remove(s);
+            }
         }
     }
 
