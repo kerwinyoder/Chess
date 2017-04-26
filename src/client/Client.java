@@ -5,6 +5,7 @@
  */
 package client;
 
+import communication.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.InetAddress;
@@ -26,15 +27,13 @@ public class Client {
     private ObjectInputStream in;
     private Random portSelector;
     private Scanner kbinput;
-    private Socket socket;
+    protected Socket socket;
 
     public Client() throws IOException {
         kbinput = new Scanner(System.in);
         portSelector = new Random();
         port = (portSelector.nextInt(7000) + 1000);
         socket = new Socket();
-        gui = new LobbyGUI();
-        gui.setVisible(true);
     }
 
     public void run() throws IOException, ClassNotFoundException {
@@ -49,16 +48,30 @@ public class Client {
             close();
         }
 
+        //Set the lobby client to be visible to the user
+        gui = new LobbyGUI(this);
+        gui.setVisible(true);
+
         while (true) {
             in = new ObjectInputStream(socket.getInputStream());
             Object rec = in.readObject();
-            LinkedList<String> players = new LinkedList();
-            if (!rec.equals(1)) {
-                players = (LinkedList) rec;
+            Message m = (Message) rec;
+
+            switch (m.getHeader()) {
+                case "list"://Server is distributing the client list
+                    LinkedList<String> players = new LinkedList();
+                    players = (LinkedList) m.getBody();
+                    if (!players.isEmpty()) {
+                        gui.updateList(players);
+                    }
+                    break;
+                case "request":
+
+                    break;
+                default://Utilized for the proof of life messages from the server
+                    break;
             }
-            if (!players.isEmpty()) {
-                gui.updateList(players);
-            }
+
         }
     }
 

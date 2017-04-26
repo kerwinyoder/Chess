@@ -5,8 +5,10 @@
  */
 package server;
 
+import communication.Message;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -38,7 +40,7 @@ public class Server {
         threadPool = Executors.newCachedThreadPool();
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, ClassNotFoundException {
         System.out.println("The server is now running at " + InetAddress.getLocalHost() + ":" + listener.getLocalPort());
         while (running) {
             Socket client = null;
@@ -53,6 +55,7 @@ public class Server {
                     sendList();
                 }
             }
+            processRequests();
         }
     }
 
@@ -66,18 +69,44 @@ public class Server {
         for (Socket s : addresses) {
             out = new ObjectOutputStream(s.getOutputStream());
             LinkedList<String> ips = new LinkedList();
+            Message m = new Message("list", null);
             for (int i = 0; i < addresses.size(); i++) {
                 if (!s.getInetAddress().equals(addresses.get(i).getInetAddress())) {
                     ips.add(addresses.get(i).getInetAddress().toString());
                 }
             }
-            out.writeObject(ips);
+            m.setBody(ips);
+            out.writeObject(m);
             out.flush();
         }
     }
 
-    private void sendRequest() {
+    private void processRequests() throws ClassNotFoundException {
+        ObjectInputStream in = null;
+        for (Socket s : addresses) {
+            try {
+                in = new ObjectInputStream(s.getInputStream());
+                Object o = in.readObject();
+                Message m = (Message) o;
+                switch (m.getHeader()) {
+                    case "request":
+                        Socket sendTo = null;
+                        for (Socket s1 : addresses) {
+                            if (s1.getInetAddress().toString().equals(m.getRequestedIP())) {
+                                sendTo = s1;
+                            }
+                        }
+                        m.setSendingIP(sendTo.getInetAddress().toString());
+                        ObjectOutputStream out = new ObjectOutputStream(sendTo.getOutputStream());
+                        out.writeObject(m);
+                        break;
+                    default://Catch any unforseen input
+                        break;
+                }
+            } catch (IOException ioe) {
 
+            }
+        }
     }
 
     /**
@@ -91,7 +120,8 @@ public class Server {
             boolean reachable = true;
             try {
                 out = new ObjectOutputStream(s.getOutputStream());
-                out.writeObject(1);
+                Message hb = new Message("probe", 1);
+                out.writeObject(hb);
             } catch (IOException ioe) {
                 reachable = false;
             }

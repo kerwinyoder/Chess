@@ -5,6 +5,11 @@
  */
 package client;
 
+import communication.Message;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.LinkedList;
 import javax.swing.DefaultListModel;
 
@@ -14,11 +19,18 @@ import javax.swing.DefaultListModel;
  */
 public class LobbyGUI extends javax.swing.JFrame {
 
+    private static Client c;
+    private Socket gSock;
+
     /**
      * Creates new form LobbyGUI
+     *
+     * @param c
      */
-    public LobbyGUI() {
+    public LobbyGUI(Client c) {
         initComponents();
+        this.c = c;
+        gSock = c.socket;
     }
 
     /**
@@ -80,8 +92,21 @@ public class LobbyGUI extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        String ip = jList1.getSelectedValue().toString();
-        System.out.println("Sending request to: " + ip);
+
+        if (!jList1.isSelectionEmpty()) {
+            String ip = jList1.getSelectedValue().toString();
+            if (ip != null) {
+                System.out.println("Sending request to: " + ip);
+                Message m = new Message("request", null);
+                m.setRequestedIP(ip);
+                try {
+                    ObjectOutputStream out = new ObjectOutputStream(gSock.getOutputStream());
+                    out.writeObject(m);
+                } catch (IOException ioe) {
+                    System.err.println("There was an error sending the request. Error: " + ioe.toString());
+                }
+            }
+        }
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -115,7 +140,7 @@ public class LobbyGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new LobbyGUI().setVisible(true);
+                new LobbyGUI(c).setVisible(true);
             }
         });
     }
