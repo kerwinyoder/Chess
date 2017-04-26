@@ -13,7 +13,7 @@ import java.io.IOException;
  * @author frost
  */
 public class ServerMain {
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException, ClassNotFoundException{
         Server s = new Server();
         s.run();
     }

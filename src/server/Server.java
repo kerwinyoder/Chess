@@ -13,8 +13,8 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -83,28 +83,42 @@ public class Server {
 
     private void processRequests() throws ClassNotFoundException {
         ObjectInputStream in = null;
+        Message m = null;
         for (Socket s : addresses) {
+            try {
+                s.setSoTimeout(10);
+            } catch (SocketException se) {
+                System.err.println("Could not set timeout");
+            }
             try {
                 in = new ObjectInputStream(s.getInputStream());
                 Object o = in.readObject();
-                Message m = (Message) o;
+                m = (Message) o;
+            } catch (SocketTimeoutException ste) {
+                //Socket read times out
+            } catch (IOException ioe) {
+                System.err.println("Something went wrong handling requests");
+            }
+            if (m != null) {
                 switch (m.getHeader()) {
                     case "request":
+                        System.out.println("Request received for processing from: " + m.getSendingIP());
                         Socket sendTo = null;
                         for (Socket s1 : addresses) {
                             if (s1.getInetAddress().toString().equals(m.getRequestedIP())) {
                                 sendTo = s1;
                             }
                         }
-                        m.setSendingIP(sendTo.getInetAddress().toString());
-                        ObjectOutputStream out = new ObjectOutputStream(sendTo.getOutputStream());
-                        out.writeObject(m);
+                        try {
+                            ObjectOutputStream out = new ObjectOutputStream(sendTo.getOutputStream());
+                            out.writeObject(m);
+                        } catch (IOException ioe) {
+
+                        }
                         break;
                     default://Catch any unforseen input
                         break;
                 }
-            } catch (IOException ioe) {
-
             }
         }
     }
