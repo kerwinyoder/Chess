@@ -51,6 +51,7 @@ public class Server {
             }
             if (client != null) {
                 if (!addresses.contains(client)) {
+                    System.out.println(client.getInetAddress().toString() + " has connected!");
                     addresses.add(client);
                     sendList();
                 }
@@ -83,9 +84,8 @@ public class Server {
 
     private void processRequests() throws ClassNotFoundException {
         ObjectInputStream in = null;
-        Message m = null;
-        boolean sent = false;
         for (Socket s : addresses) {
+            Message m = null;
             try {
                 s.setSoTimeout(10);
             } catch (SocketException se) {
@@ -98,7 +98,7 @@ public class Server {
             } catch (SocketTimeoutException ste) {
                 //Socket read times out
             } catch (IOException ioe) {
-                System.err.println("Something went wrong handling requests");
+                //Did not read an object
             }
             if (m != null) {
                 switch (m.getHeader()) {

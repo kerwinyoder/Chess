@@ -14,6 +14,7 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
     private boolean requestAccepted;
+    private boolean requestSeen;
     private Object body;
     private String header;
     private String requestedIP;
@@ -23,6 +24,7 @@ public class Message implements Serializable {
         header = h;
         body = b;
         requestAccepted = false;
+        requestSeen = false;
         requestedIP = null;
         sendingIP = null;
     }
@@ -61,6 +63,10 @@ public class Message implements Serializable {
 
     public String getSendingIP() {
         return sendingIP;
+    }
+
+    public void requestSeen() {
+        requestSeen = true;
     }
 
 }

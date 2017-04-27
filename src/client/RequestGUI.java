@@ -5,17 +5,31 @@
  */
 package client;
 
+import communication.Message;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author djfearon0
  */
 public class RequestGUI extends javax.swing.JFrame {
 
+    private static Client c;
+    private static Message m;
+    private Socket gSock;
+
     /**
      * Creates new form RequestGUI
      */
-    public RequestGUI() {
+    public RequestGUI(Client c, Message m) {
         initComponents();
+        this.c = c;
+        this.m = m;
+        gSock = c.socket;
     }
 
     /**
@@ -35,7 +49,6 @@ public class RequestGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jTextPane1.setEditable(false);
-        jTextPane1.setText("Dakota is requesting to play a round of chess");
         jScrollPane1.setViewportView(jTextPane1);
 
         jButton1.setText("Accept");
@@ -84,12 +97,27 @@ public class RequestGUI extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-
+        m.requestSeen();
+        ObjectOutputStream out;
+        try {
+            out = new ObjectOutputStream(gSock.getOutputStream());
+            out.writeObject(m);
+        } catch (IOException ex) {
+            Logger.getLogger(RequestGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-
+        m.requestSeen();
+        m.acceptRequest();
+        ObjectOutputStream out;
+        try {
+            out = new ObjectOutputStream(gSock.getOutputStream());
+            out.writeObject(m);
+        } catch (IOException ex) {
+            Logger.getLogger(RequestGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -122,9 +150,13 @@ public class RequestGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RequestGUI().setVisible(true);
+                new RequestGUI(c, m).setVisible(true);
             }
         });
+    }
+
+    public void updateRequest() {
+        jTextPane1.setText(m.getSendingIP() + " would like to play a round of chess");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

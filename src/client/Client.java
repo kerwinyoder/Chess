@@ -73,6 +73,8 @@ public class Client {
                         break;
                     case "request":
                         System.out.println("A request was receieved!!");
+                        RequestGUI rg = new RequestGUI(this, m);
+                        rg.setVisible(true);
                         break;
                     default://Utilized for the proof of life messages from the server
                         break;
