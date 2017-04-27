@@ -49,6 +49,10 @@ public class Message implements Serializable {
         requestAccepted = true;
     }
 
+    public boolean requestAccepted() {
+        return requestAccepted;
+    }
+
     public void setRequestedIP(String ip) {
         requestedIP = ip;
     }
@@ -67,6 +71,10 @@ public class Message implements Serializable {
 
     public void requestSeen() {
         requestSeen = true;
+    }
+
+    public boolean getRequestSeen() {
+        return requestSeen;
     }
 
 }

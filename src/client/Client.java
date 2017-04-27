@@ -15,6 +15,8 @@ import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 /**
  *
@@ -59,7 +61,7 @@ public class Client {
                 Object rec = in.readObject();
                 m = (Message) rec;
             } catch (IOException ioe) {
-
+                System.out.println("Nothing read");
             }
 
             if (m != null) {
@@ -74,6 +76,7 @@ public class Client {
                     case "request":
                         System.out.println("A request was receieved!!");
                         RequestGUI rg = new RequestGUI(this, m);
+                        rg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         rg.setVisible(true);
                         break;
                     default://Utilized for the proof of life messages from the server

@@ -104,6 +104,7 @@ public class RequestGUI extends javax.swing.JFrame {
             out.writeObject(m);
             out.flush();
         } catch (IOException ex) {
+            System.out.println("IT DIDN'T WORK!!");
             Logger.getLogger(RequestGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -118,6 +119,7 @@ public class RequestGUI extends javax.swing.JFrame {
             out.writeObject(m);
             out.flush();
         } catch (IOException ex) {
+            System.out.println("IT DIDN'T WORK!!");
             Logger.getLogger(RequestGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed

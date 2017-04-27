@@ -29,7 +29,7 @@ public class Server {
     private int portNum;
     private ObjectOutputStream out;
     private ExecutorService threadPool;
-    private LinkedList<Socket> addresses;
+    private volatile LinkedList<Socket> addresses;
     private ServerSocket listener;
 
     public Server() throws IOException {
@@ -44,6 +44,9 @@ public class Server {
         System.out.println("The server is now running at " + InetAddress.getLocalHost() + ":" + listener.getLocalPort());
         while (running) {
             Socket client = null;
+
+            processRequests();
+
             try {
                 client = listener.accept();
             } catch (SocketTimeoutException ste) {
@@ -56,7 +59,6 @@ public class Server {
                     sendList();
                 }
             }
-            processRequests();
         }
     }
 
@@ -103,20 +105,24 @@ public class Server {
             if (m != null) {
                 switch (m.getHeader()) {
                     case "request":
-                        System.out.println("Request received for processing from: " + m.getSendingIP());
-                        Socket sendTo = null;
-                        for (Socket s1 : addresses) {
-                            if (s1.getInetAddress().toString().equals(m.getRequestedIP())) {
-                                sendTo = s1;
+                        if (!m.getRequestSeen()) {
+                            System.out.println("Request received for processing from: " + m.getSendingIP());
+                            Socket sendTo = null;
+                            for (Socket s1 : addresses) {
+                                if (s1.getInetAddress().toString().equals(m.getRequestedIP())) {
+                                    sendTo = s1;
+                                }
                             }
-                        }
-                        try {
-                            ObjectOutputStream out = new ObjectOutputStream(sendTo.getOutputStream());
-                            out.writeObject(m);
-                            out.flush();
-                            m = null;
-                        } catch (IOException ioe) {
+                            try {
+                                out = new ObjectOutputStream(sendTo.getOutputStream());
+                                out.writeObject(m);
+                                out.flush();
+                                m = null;
+                            } catch (IOException ioe) {
 
+                            }
+                        } else {
+                            System.out.println("l;aksdjfa;lskdjf;alskdfj;lk");
                         }
                         break;
                     default://Catch any unforseen input
