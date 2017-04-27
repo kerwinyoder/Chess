@@ -103,9 +103,12 @@ public class LobbyGUI extends javax.swing.JFrame {
                 try {
                     ObjectOutputStream out = new ObjectOutputStream(gSock.getOutputStream());
                     out.writeObject(m);
+                    out.flush();
+                    m = null;
                 } catch (IOException ioe) {
                     System.err.println("There was an error sending the request. Error: " + ioe.toString());
                 }
+                m = null;
             }
         }
 
