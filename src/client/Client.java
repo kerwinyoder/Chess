@@ -53,23 +53,30 @@ public class Client {
         gui.setVisible(true);
 
         while (true) {
-            in = new ObjectInputStream(socket.getInputStream());
-            Object rec = in.readObject();
-            Message m = (Message) rec;
+            Message m = null;
+            try {
+                in = new ObjectInputStream(socket.getInputStream());
+                Object rec = in.readObject();
+                m = (Message) rec;
+            } catch (IOException ioe) {
 
-            switch (m.getHeader()) {
-                case "list"://Server is distributing the client list
-                    LinkedList<String> players = new LinkedList();
-                    players = (LinkedList) m.getBody();
-                    if (!players.isEmpty()) {
-                        gui.updateList(players);
-                    }
-                    break;
-                case "request":
+            }
 
-                    break;
-                default://Utilized for the proof of life messages from the server
-                    break;
+            if (m != null) {
+                switch (m.getHeader()) {
+                    case "list"://Server is distributing the client list
+                        LinkedList<String> players = new LinkedList();
+                        players = (LinkedList) m.getBody();
+                        if (!players.isEmpty()) {
+                            gui.updateList(players);
+                        }
+                        break;
+                    case "request":
+                        System.out.println("A request was receieved!!");
+                        break;
+                    default://Utilized for the proof of life messages from the server
+                        break;
+                }
             }
 
         }

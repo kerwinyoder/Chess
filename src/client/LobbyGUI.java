@@ -93,13 +93,12 @@ public class LobbyGUI extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
 
-//        if (!jList1.isSelectionEmpty()) {
-//            String ip = jList1.getSelectedValue().toString();
-//            if (ip != null) {
-//                System.out.println("Sending request to: " + ip);
+        if (!jList1.isSelectionEmpty()) {
+            String ip = jList1.getSelectedValue().toString();
+            if (ip != null) {
+                System.out.println("Sending request to: " + ip);
                 Message m = new Message("request", null);
                 m.setSendingIP(gSock.getInetAddress().toString());
-                String ip = "/192.168.56.1";
                 m.setRequestedIP(ip);
                 try {
                     ObjectOutputStream out = new ObjectOutputStream(gSock.getOutputStream());
@@ -107,8 +106,8 @@ public class LobbyGUI extends javax.swing.JFrame {
                 } catch (IOException ioe) {
                     System.err.println("There was an error sending the request. Error: " + ioe.toString());
                 }
-//            }
-//        }
+            }
+        }
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
