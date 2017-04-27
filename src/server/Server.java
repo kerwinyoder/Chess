@@ -84,6 +84,7 @@ public class Server {
     private void processRequests() throws ClassNotFoundException {
         ObjectInputStream in = null;
         Message m = null;
+        boolean sent = false;
         for (Socket s : addresses) {
             try {
                 s.setSoTimeout(10);
@@ -112,6 +113,7 @@ public class Server {
                         try {
                             ObjectOutputStream out = new ObjectOutputStream(sendTo.getOutputStream());
                             out.writeObject(m);
+                            out.flush();
                         } catch (IOException ioe) {
 
                         }
