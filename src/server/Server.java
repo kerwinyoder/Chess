@@ -114,6 +114,7 @@ public class Server {
                             ObjectOutputStream out = new ObjectOutputStream(sendTo.getOutputStream());
                             out.writeObject(m);
                             out.flush();
+                            m = null;
                         } catch (IOException ioe) {
 
                         }

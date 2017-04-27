@@ -102,6 +102,7 @@ public class RequestGUI extends javax.swing.JFrame {
         try {
             out = new ObjectOutputStream(gSock.getOutputStream());
             out.writeObject(m);
+            out.flush();
         } catch (IOException ex) {
             Logger.getLogger(RequestGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -115,6 +116,7 @@ public class RequestGUI extends javax.swing.JFrame {
         try {
             out = new ObjectOutputStream(gSock.getOutputStream());
             out.writeObject(m);
+            out.flush();
         } catch (IOException ex) {
             Logger.getLogger(RequestGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
