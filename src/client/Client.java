@@ -24,7 +24,7 @@ import javax.swing.WindowConstants;
  */
 public class Client {
 
-    private int port;
+    private int serverPort;
     private LobbyGUI gui;
     private ObjectInputStream in;
     private Random portSelector;
@@ -34,16 +34,14 @@ public class Client {
     public Client() throws IOException {
         kbinput = new Scanner(System.in);
         portSelector = new Random();
-        port = (portSelector.nextInt(7000) + 1000);
+        serverPort = 5000;
         socket = new Socket();
     }
 
     public void run() throws IOException, ClassNotFoundException {
         System.out.print("Please enter the IP Address of the server: ");
         String ip = kbinput.nextLine();
-        System.out.print("Please enter the port number of the server: ");
-        int port = kbinput.nextInt();
-        InetSocketAddress sa = new InetSocketAddress(ip, port);
+        InetSocketAddress sa = new InetSocketAddress(ip, serverPort);
         try {
             socket.connect(sa);
         } catch (SocketException se) {
@@ -61,7 +59,7 @@ public class Client {
                 Object rec = in.readObject();
                 m = (Message) rec;
             } catch (IOException ioe) {
-                System.out.println("Nothing read");
+                //Nothing was read from the socket
             }
 
             if (m != null) {
@@ -74,10 +72,16 @@ public class Client {
                         }
                         break;
                     case "request":
-                        System.out.println("A request was receieved!!");
-                        RequestGUI rg = new RequestGUI(this, m);
-                        rg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                        rg.setVisible(true);
+                        if (m.getRequestSeen() && !m.requestAccepted()) {
+                            RejectedGUI dg = new RejectedGUI();
+                            dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            dg.setVisible(true);
+                        } else {
+                            System.out.println("A request was receieved!!");
+                            RequestGUI rg = new RequestGUI(this, m);
+                            rg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            rg.setVisible(true);
+                        }
                         break;
                     default://Utilized for the proof of life messages from the server
                         break;

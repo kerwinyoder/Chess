@@ -74,9 +74,9 @@ public class Server {
             LinkedList<String> ips = new LinkedList();
             Message m = new Message("list", null);
             for (int i = 0; i < addresses.size(); i++) {
-                if (!s.getInetAddress().equals(addresses.get(i).getInetAddress())) {
+//                if (!s.getInetAddress().equals(addresses.get(i).getInetAddress())) {
                     ips.add(addresses.get(i).getInetAddress().toString());
-                }
+//                }
             }
             m.setBody(ips);
             out.writeObject(m);
@@ -107,12 +107,12 @@ public class Server {
                     case "request":
                         if (!m.getRequestSeen()) {
                             System.out.println("Request received for processing from: " + m.getSendingIP());
-                            Socket sendTo = null;
-                            for (Socket s1 : addresses) {
-                                if (s1.getInetAddress().toString().equals(m.getRequestedIP())) {
-                                    sendTo = s1;
-                                }
-                            }
+                            Socket sendTo = findSocket(m.getRequestedIP());
+//                            for (Socket s1 : addresses) {
+//                                if (s1.getInetAddress().toString().equals(m.getRequestedIP())) {
+//                                    sendTo = s1;
+//                                }
+//                            }
                             try {
                                 out = new ObjectOutputStream(sendTo.getOutputStream());
                                 out.writeObject(m);
@@ -121,8 +121,28 @@ public class Server {
                             } catch (IOException ioe) {
 
                             }
-                        } else {
-                            System.out.println("l;aksdjfa;lskdjf;alskdfj;lk");
+                        } else//Both clients have seen the message, request was accepted
+                        {
+                            if (m.requestAccepted()) {
+                                Socket sender = findSocket(m.getSendingIP());
+                                Socket receiver = findSocket(m.getRequestedIP());
+
+                                //Remove the two sockets from the list to keep them from showing up in the list
+                                addresses.remove(sender);
+                                addresses.remove(receiver);
+                                GameConnection gc = new GameConnection(sender, receiver);
+                                threadPool.execute(gc);
+                            } else {
+                                Socket sender = findSocket(m.getSendingIP());
+                                try {
+                                    out = new ObjectOutputStream(sender.getOutputStream());
+                                    out.writeObject(m);
+                                    out.flush();
+                                    m = null;
+                                } catch (IOException ioe) {
+
+                                }
+                            }
                         }
                         break;
                     default://Catch any unforseen input
@@ -155,8 +175,21 @@ public class Server {
                     System.err.println("Socket could not be closed");
                 }
                 addresses.remove(s);
+                sendList();
             }
         }
+    }
+
+    private Socket findSocket(String ip) {
+        Socket temp = null;
+
+        for (Socket s : addresses) {
+            if (s.getInetAddress().toString().equals(ip)) {
+                temp = s;
+            }
+        }
+
+        return temp;
     }
 
 }

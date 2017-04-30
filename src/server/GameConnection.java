@@ -5,19 +5,29 @@
  */
 package server;
 
+import chess.core.Game;
+import java.net.Socket;
+
 /**
  *
  * @author frost
  */
 public class GameConnection implements Runnable{
     
-    public GameConnection(){
-        
+    private Socket player1;
+    private Socket player2;
+    private Game g;
+    
+    public GameConnection(Socket s1, Socket s2){
+        player1 = s1;
+        player2 = s2;
+        g = new Game();
+        g.initialPopulate();
     }
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        g.printBoard();
     }
     
 }
