@@ -24,14 +24,14 @@ import java.util.concurrent.Executors;
  * @author frost
  */
 public class Server {
-
+    
     private boolean running = true;
     private int portNum;
     private ObjectOutputStream out;
     private ExecutorService threadPool;
     private volatile LinkedList<Socket> addresses;
     private ServerSocket listener;
-
+    
     public Server() throws IOException {
         portNum = 5000;
         listener = new ServerSocket(portNum);
@@ -39,14 +39,14 @@ public class Server {
         addresses = new LinkedList<>();
         threadPool = Executors.newCachedThreadPool();
     }
-
+    
     public void run() throws IOException, ClassNotFoundException {
         System.out.println("The server is now running at " + InetAddress.getLocalHost() + ":" + listener.getLocalPort());
         while (running) {
             Socket client = null;
-
+            
             processRequests();
-
+            
             try {
                 client = listener.accept();
             } catch (SocketTimeoutException ste) {
@@ -75,7 +75,7 @@ public class Server {
             Message m = new Message("list", null);
             for (int i = 0; i < addresses.size(); i++) {
 //                if (!s.getInetAddress().equals(addresses.get(i).getInetAddress())) {
-                    ips.add(addresses.get(i).getInetAddress().toString());
+                ips.add(addresses.get(i).getInetAddress().toString());
 //                }
             }
             m.setBody(ips);
@@ -83,7 +83,7 @@ public class Server {
             out.flush();
         }
     }
-
+    
     private void processRequests() throws ClassNotFoundException {
         ObjectInputStream in = null;
         for (Socket s : addresses) {
@@ -119,18 +119,17 @@ public class Server {
                                 out.flush();
                                 m = null;
                             } catch (IOException ioe) {
-
+                                
                             }
                         } else//Both clients have seen the message, request was accepted
-                        {
-                            if (m.requestAccepted()) {
+                         if (m.requestAccepted()) {
                                 Socket sender = findSocket(m.getSendingIP());
                                 Socket receiver = findSocket(m.getRequestedIP());
 
                                 //Remove the two sockets from the list to keep them from showing up in the list
                                 addresses.remove(sender);
                                 addresses.remove(receiver);
-                                GameConnection gc = new GameConnection(sender, receiver);
+                                GameConnection gc = new GameConnection(sender, receiver, this);
                                 threadPool.execute(gc);
                             } else {
                                 Socket sender = findSocket(m.getSendingIP());
@@ -140,10 +139,9 @@ public class Server {
                                     out.flush();
                                     m = null;
                                 } catch (IOException ioe) {
-
+                                    
                                 }
                             }
-                        }
                         break;
                     default://Catch any unforseen input
                         break;
@@ -179,17 +177,23 @@ public class Server {
             }
         }
     }
-
+    
     private Socket findSocket(String ip) {
         Socket temp = null;
-
+        
         for (Socket s : addresses) {
             if (s.getInetAddress().toString().equals(ip)) {
                 temp = s;
             }
         }
-
+        
         return temp;
     }
-
+    
+    public void returnSocket(Socket s) {
+        if (!addresses.contains(s)) {
+            addresses.add(s);
+        }
+    }
+    
 }

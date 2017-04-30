@@ -14,11 +14,13 @@ import java.net.Socket;
  */
 public class GameConnection implements Runnable{
     
+    private Server server;
     private Socket player1;
     private Socket player2;
     private Game g;
     
-    public GameConnection(Socket s1, Socket s2){
+    public GameConnection(Socket s1, Socket s2, Server server){
+        this.server = server;
         player1 = s1;
         player2 = s2;
         g = new Game();
@@ -28,6 +30,12 @@ public class GameConnection implements Runnable{
     @Override
     public void run() {
         g.printBoard();
+        returnSockets();
+    }
+    
+    private void returnSockets(){
+        server.returnSocket(player1);
+        server.returnSocket(player2);
     }
     
 }
