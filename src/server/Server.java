@@ -134,6 +134,23 @@ public class Server {
                             Socket sender = findSocket(m.getSendingIP());
                             Socket receiver = findSocket(m.getRequestedIP());
 
+                            Message gameStart = new Message("game", null);
+
+                            //Send messages to both clients to send them into the game GUI
+                            try {
+                                ObjectOutputStream outSender = new ObjectOutputStream(sender.getOutputStream());
+                                ObjectOutputStream outReceiver = new ObjectOutputStream(receiver.getOutputStream());
+                                System.out.println("Output streams created.");
+                                outSender.writeObject(gameStart);
+                                outReceiver.writeObject(gameStart);
+                                System.out.println("Messages sent.");
+                                outSender.flush();
+                                outReceiver.flush();
+                            } catch (IOException ioe) {
+                                //Whoops
+                                System.out.println("Could not send to either of the clients");
+                            }
+
                             //Remove the two sockets from the list to keep them from showing up in the list
                             addresses.remove(sender);
                             addresses.remove(receiver);

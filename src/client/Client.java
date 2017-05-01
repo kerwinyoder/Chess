@@ -5,6 +5,9 @@
  */
 package client;
 
+import client.gui.LobbyGUI;
+import client.gui.RequestGUI;
+import client.gui.RejectedGUI;
 import communication.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -27,7 +30,7 @@ public class Client {
     private ObjectInputStream in;
     private Random portSelector;
     private Scanner kbinput;
-    protected Socket socket;
+    public Socket socket;
 
     public Client() throws IOException {
         kbinput = new Scanner(System.in);
@@ -62,6 +65,9 @@ public class Client {
 
             if (m != null) {
                 switch (m.getHeader()) {
+                    case "game":
+                        System.out.println("GAME ON M*****F*****!!!!!");
+                        break;
                     case "list"://Server is distributing the client list
                         LinkedList<String> players = new LinkedList();
                         players = (LinkedList) m.getBody();
