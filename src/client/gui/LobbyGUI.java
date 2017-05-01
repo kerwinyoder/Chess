@@ -32,6 +32,7 @@ public class LobbyGUI extends javax.swing.JFrame {
         initComponents();
         this.c = c;
         gSock = c.socket;
+        this.setTitle("Chess Lobby");
     }
 
     /**
