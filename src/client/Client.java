@@ -24,21 +24,21 @@ import javax.swing.JFrame;
  * @author frost
  */
 public class Client {
-
+    
     private int serverPort;
     private LobbyGUI gui;
     private ObjectInputStream in;
     private Random portSelector;
     private Scanner kbinput;
     public Socket socket;
-
+    
     public Client() throws IOException {
         kbinput = new Scanner(System.in);
         portSelector = new Random();
         serverPort = 5000;
         socket = new Socket();
     }
-
+    
     public void run() throws IOException, ClassNotFoundException {
         System.out.print("Please enter the IP Address of the server: ");
         String ip = kbinput.nextLine();
@@ -52,7 +52,7 @@ public class Client {
         //Set the lobby client to be visible to the user
         gui = new LobbyGUI(this);
         gui.setVisible(true);
-
+        
         while (true) {
             Message m = null;
             try {
@@ -62,8 +62,11 @@ public class Client {
             } catch (IOException ioe) {
                 //Nothing was read from the socket
             }
-
+            
             if (m != null) {
+                if (!m.getHeader().equals("probe")) {
+                    System.out.println(m.getHeader());
+                }
                 switch (m.getHeader()) {
                     case "game":
                         System.out.println("GAME ON M*****F*****!!!!!");
@@ -92,10 +95,10 @@ public class Client {
                         break;
                 }
             }
-
+            
         }
     }
-
+    
     private void close() {
         boolean setToClose = true;
         try {
@@ -108,5 +111,5 @@ public class Client {
             System.exit(0);
         }
     }
-
+    
 }

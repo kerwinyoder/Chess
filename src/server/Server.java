@@ -140,6 +140,8 @@ public class Server {
                             try {
                                 ObjectOutputStream outSender = new ObjectOutputStream(sender.getOutputStream());
                                 ObjectOutputStream outReceiver = new ObjectOutputStream(receiver.getOutputStream());
+                                System.out.println(sender);
+                                System.out.println(receiver);
                                 System.out.println("Output streams created.");
                                 outSender.writeObject(gameStart);
                                 outReceiver.writeObject(gameStart);
