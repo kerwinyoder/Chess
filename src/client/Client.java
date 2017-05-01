@@ -73,6 +73,7 @@ public class Client {
                         break;
                     case "request":
                         if (m.getRequestSeen() && !m.requestAccepted()) {
+                            System.out.println("Request was rejected");
                             RejectedGUI dg = new RejectedGUI();
                             dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             dg.setVisible(true);
