@@ -40,6 +40,13 @@ public class Server {
         threadPool = Executors.newCachedThreadPool();
     }
 
+    /**
+     * Run the server.&nbsp;Accept new sockets, process requests, and distribute
+     * the client list.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public void run() throws IOException, ClassNotFoundException {
         System.out.println("The server is now running at " + InetAddress.getLocalHost() + ":" + listener.getLocalPort());
         while (running) {
@@ -84,6 +91,12 @@ public class Server {
         }
     }
 
+    /**
+     * Iterate through the client list and process any pending requests that
+     * have been made.
+     *
+     * @throws ClassNotFoundException
+     */
     private void processRequests() throws ClassNotFoundException {
         ObjectInputStream in = null;
         for (Socket s : addresses) {
@@ -173,6 +186,12 @@ public class Server {
         }
     }
 
+    /**
+     * Given a string representation of an IP address, find the socket.
+     *
+     * @param ip String representation of an IP address
+     * @return
+     */
     private Socket findSocket(String ip) {
         Socket temp = null;
 
@@ -185,6 +204,11 @@ public class Server {
         return temp;
     }
 
+    /**
+     * Used to return sockets from a game thread
+     *
+     * @param s The socket being returned
+     */
     public void returnSocket(Socket s) {
         if (!addresses.contains(s)) {
             addresses.add(s);

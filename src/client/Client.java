@@ -8,7 +8,6 @@ package client;
 import communication.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -16,7 +15,6 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 import javax.swing.JFrame;
-import javax.swing.WindowConstants;
 
 /**
  *
