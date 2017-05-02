@@ -1,55 +1,305 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chess.core.pieces;
 
+import chess.core.Board;
+
 /**
+ * A piece for the Chess game
  *
  * @author ragilmore0
+ * @author Kerwin Yoder
+ * @version 2017.05.02
  */
 public abstract class Piece {
 
-    private int xPos;
-    private int yPos;
-    private String color;
-    private final String pieceType;
-    //private boolean alive; Maybe? 
+    /**
+     * The column of the piece's current position
+     */
+    protected int xPos;
 
+    /**
+     * The row of the piece's current position
+     */
+    protected int yPos;
+
+    /**
+     * The color of the piece
+     */
+    protected final String COLOR;
+
+    /**
+     * The type of the piece
+     */
+    protected final String TYPE;
+
+    /**
+     *
+     * @param x the column of the piece
+     * @param y the row of the piece
+     * @param color the color of the piece
+     * @param type the type of the piece
+     */
     public Piece(int x, int y, String color, String type) {
+        this.COLOR = color;
+        this.TYPE = type;
         this.xPos = x;
         this.yPos = y;
-        this.color = color;
-        this.pieceType = type;
     }
 
+    /**
+     * Gets the color of the piece
+     *
+     * @return the color of the piece
+     */
     public String getColor() {
-        return this.color;
+        return this.COLOR;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
+    /**
+     * Gets the column of the piece's current position
+     *
+     * @return the column of the piece's current position
+     */
     public int getXPos() {
         return this.xPos;
     }
 
+    /**
+     * Sets the column of the piece's position
+     *
+     * @param x the column of the piece's new position
+     */
     public void setXPos(int x) {
         this.xPos = x;
     }
 
+    /**
+     * Gets the row of the piece's current position
+     *
+     * @return the row of the piece's current position
+     */
     public int getYPos() {
         return this.yPos;
     }
 
+    /**
+     * Sets the row of the piece's position
+     *
+     * @param y the row of piece's new position
+     */
     public void setYPos(int y) {
         this.yPos = y;
     }
 
+    /**
+     * Gets the type of the piece
+     *
+     * @return the type of the piece
+     */
     public String getType() {
-        return this.pieceType;
+        return this.TYPE;
     }
 
+    /**
+     * Checks if the given move is valid
+     *
+     * @param board The board on which the move is being checked
+     * @param targetXPos the column of the new position
+     * @param targetYPos the row of the new position
+     * @return true if the move is valid and false otherwise
+     */
+    public abstract boolean isValidMove(Board board, int targetXPos, int targetYPos);
+
+    /**
+     * Checks if the piece has any available valid moves
+     *
+     * @param board the board on which the piece is stored
+     * @return true if the piece has a valid move available and false otherwise
+     */
+    public abstract boolean hasValidMoves(Board board);
+
+    /**
+     * Checks if the given position is in the bounds of the board.
+     *
+     * @param targetXPos the column of the position that is being tested
+     * @param targetYPos the row of the position that is being tested
+     * @return true if the given position is within the bounds of the board and
+     * false otherwise
+     */
+    protected final boolean isInBounds(int targetXPos, int targetYPos) {
+        return targetXPos >= 0 && targetXPos < 8 && targetYPos >= 0 && targetYPos < 8;
+    }
+
+    /**
+     * Checks if the given position can be reached by making a horizontal move
+     * from the piece's current position
+     *
+     * @param targetXPos the column of the target position
+     * @param targetYPos the row of the target position
+     * @return true if the target position can be reached by making a horizontal
+     * move from the piece's current position
+     */
+    protected final boolean isHorizontal(int targetXPos, int targetYPos) {
+        return yPos == targetYPos && targetXPos != xPos;
+    }
+
+    /**
+     * Checks if the given position can be reached by making a vertical move
+     * from the piece's current position
+     *
+     * @param targetXPos the column of the target position
+     * @param targetYPos the row of the target position
+     * @return true if the target position can be reached by making a vertical
+     * move from the piece's current position
+     */
+    protected final boolean isVertical(int targetXPos, int targetYPos) {
+        return xPos == targetXPos && targetYPos != yPos;
+    }
+
+    /**
+     * Checks if the given position can be reached by making a diagonal move
+     * from the piece's current position
+     *
+     * @param targetXPos the column of the target position
+     * @param targetYPos the row of the target position
+     * @return true if the target position can be reached by making a diagonal
+     * move from the piece's current position
+     */
+    protected final boolean isDiagonal(int targetXPos, int targetYPos) {
+        return Math.abs(targetXPos - xPos) == Math.abs(targetYPos - yPos) && targetXPos != xPos;
+    }
+
+    /**
+     * Checks if the path between the piece's current position and the target
+     * position is blocked
+     *
+     * @param board the board on which the piece is located
+     * @param targetXPos the column of the target position
+     * @return true if the path is blocked horizontally and false otherwise
+     */
+    protected final boolean isBlockedHorizontally(Board board, int targetXPos) {
+        //if the move is less than two blocks, the path cannot be blocked
+        if (Math.abs(targetXPos - xPos) < 2) {
+            return false;
+        }
+
+        //check if any pieces block the path 
+        int max = Math.max(xPos, targetXPos);
+        int min = Math.min(xPos, targetXPos);
+        for (int i = min + 1; i < max; ++i) {
+            if (board.getPiece(i, yPos) != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the path between the piece's current position and the target
+     * position is blocked
+     *
+     * @param board the board on which the piece is located
+     * @param targetYPos the row of the target position
+     * @return true if the path is blocked vertically and false otherwise
+     */
+    protected final boolean isBlockedVertically(Board board, int targetYPos) {
+        //if the move is less than two blocks, the path cannot be blocked
+        if (Math.abs(targetYPos - yPos) < 2) {
+            return false;
+        }
+
+        //check if any pieces block the path 
+        int max = Math.max(yPos, targetYPos);
+        int min = Math.min(yPos, targetYPos);
+        for (int i = min + 1; i < max; ++i) {
+            if (board.getPiece(xPos, i) != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the path between the piece's current position and the target
+     * position is blocked
+     *
+     * @param board the board on which the piece is located
+     * @param targetXPos the column of the target position
+     * @param targetYPos the row of the target position
+     * @return true if the path is blocked diagonally and false otherwise
+     */
+    protected final boolean isBlockedDiagonally(Board board, int targetXPos, int targetYPos) {
+        int x = Math.min(xPos, targetXPos) + 1;
+        int endX = Math.max(xPos, targetXPos);
+        int y;
+        int endY;
+
+        if (x == xPos) {
+            y = yPos;
+            endY = targetYPos;
+        } else {
+            y = targetYPos;
+            endY = yPos;
+        }
+        //scanning diagonally up (bottom-left to top-right)
+        if (y < endY) {
+            while (x < endX && y < endY) {
+                if (board.getPiece(x, y) != null) {
+                    return false;
+                }
+                ++x;
+                ++y;
+            }
+        } //scanning diagonally down (top-left to bottom-right)
+        else {
+            while (x < endX && y > endY) {
+                if (board.getPiece(x, y) != null) {
+                    return false;
+                }
+                ++x;
+                --y;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the given position is occupied by any piece
+     *
+     * @param board the board on which the piece is located
+     * @param targetXPos the column of the target position
+     * @param targetYPos the row of the target position
+     * @return true if the given position is occupied by a piece and false
+     * otherwise
+     */
+    protected final boolean isOccupied(Board board, int targetXPos, int targetYPos) {
+        return board.getPiece(targetXPos, targetYPos) == null;
+    }
+
+    /**
+     * Checks if the given position is occupied by a piece of the same color as
+     * this piece
+     *
+     * @param board the board on which the piece is located
+     * @param targetXPos the column of the target position
+     * @param targetYPos the row of the target position
+     * @return true if the given position is occupied by a piece of the same
+     * color as this piece and false otherwise
+     */
+    protected final boolean isOccupiedByFriend(Board board, int targetXPos, int targetYPos) {
+        Piece destPiece = board.getPiece(targetXPos, targetYPos);
+        return destPiece != null && destPiece.getColor().equalsIgnoreCase(COLOR);
+    }
+
+    /**
+     * Checks if the given position is occupied by an enemy piece
+     *
+     * @param board the board on which the piece is located
+     * @param targetXPos the column of the target position
+     * @param targetYPos the row of the target position
+     * @return true if the given position is occupied by an enemy piece
+     */
+    protected final boolean isOccupiedByFoe(Board board, int targetXPos, int targetYPos) {
+        Piece destPiece = board.getPiece(targetXPos, targetYPos);
+        return destPiece != null && !destPiece.getColor().equalsIgnoreCase(COLOR);
+    }
 }

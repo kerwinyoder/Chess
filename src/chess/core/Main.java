@@ -10,11 +10,9 @@ package chess.core;
  * @author ragilmore0
  */
 public class Main {
-    
-    public static void main(String[] args){
-        Game game = new Game();
-        game.initialPopulate();
-        game.printBoard();
+
+    public static void main(String[] args) {
+        Board board = new Board();
+        board.printBoard();
     }
-    
 }

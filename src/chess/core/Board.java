@@ -1,0 +1,550 @@
+package chess.core;
+
+import chess.core.pieces.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+
+/**
+ * A chess board
+ *
+ * @author ragilmore0
+ * @author Kerwin Yoder
+ * @version 2017.05.02
+ */
+public class Board {
+
+    private final Piece[][] BOARD;
+    //a list of the white pieces that have not been captured
+    private final ArrayList<Piece> whitePieces;
+    //a list of the black pieces that have not been captured
+    private final ArrayList<Piece> blackPieces;
+    private King whiteKing;
+    private King blackKing;
+    //the piece is elegible to be the victim of an en passant attack on the next turn.
+    private Piece enPassantVictim;
+    //tracks whether the king of the opposing side was put in check by a move
+    private boolean inCheck;
+    private boolean isWhiteTurn;
+    //used to check for 50 consecutive moves without moving a pawn or capturing a piece
+    private int moveCount;
+    //used to check for draw by three fold repetition.
+    private HashMap<String, Integer> stateCount;
+
+    /**
+     * Creates a new Chess Board.
+     */
+    public Board() {
+        BOARD = new Piece[8][8];
+        whitePieces = new ArrayList<>(16);
+        blackPieces = new ArrayList<>(16);
+        enPassantVictim = null;
+        inCheck = false;
+        isWhiteTurn = true;
+        moveCount = 0;
+        stateCount = new HashMap<>(100);
+        initialPopulate();
+    }
+
+    /**
+     * Makes the given move if it is valid
+     *
+     * @param move the attempted move
+     * @return true if the move was valid and the pieces were moved or false
+     * otherwise
+     */
+    public boolean move(Move move) {
+        //Check the bounds of the starting position
+        if (!isInBounds(move.START_X, move.START_Y)) {
+            return false;
+        }
+
+        //Check if the player whose turn it is has a piece at the specified starting position
+        Piece piece = BOARD[move.START_X][move.START_Y];
+        if (piece == null || (isWhiteTurn && piece.getColor().equalsIgnoreCase("black")) || (!isWhiteTurn && piece.getColor().equalsIgnoreCase("white"))) {
+            return false;
+        }
+
+        //If the king is in check, force the player to move the king
+        if (!(piece instanceof King) && inCheck) {
+            return false;
+        }
+
+        //Make the requested move if it is valid
+        boolean isValid = piece.isValidMove(this, move.TARGET_X, move.TARGET_Y);
+        if (isValid) {
+            //Move the piece
+            BOARD[move.START_X][move.START_Y] = null;
+            Piece victim = BOARD[move.TARGET_X][move.TARGET_Y];
+            BOARD[move.TARGET_X][move.TARGET_Y] = piece;
+            ++moveCount;
+
+            //update the state count
+            String state = getState();
+            if (stateCount.get(state) == null) {
+                stateCount.put(state, 1);
+            } else {
+                stateCount.put(state, stateCount.get(state) + 1);
+            }
+
+            //if a piece was captured, update the move count and list of alive pieces 
+            if (victim != null) {
+                if (victim.getColor().equalsIgnoreCase("white")) {
+                    whitePieces.remove(victim);
+                } else {
+                    blackPieces.remove(victim);
+                }
+                //reset the move count since a piece was captured
+                moveCount = 0;
+                //clear the state count since all existing states can never be achieved after a piece has been captured
+                stateCount.clear();
+            }
+            enPassantVictim = null;
+
+            //Check for en passant and promotion and update the move count
+            if (piece instanceof Pawn) {
+                //if a pawn moved two squares, mark it as a potential en passant victim
+                if (Math.abs(move.TARGET_Y - move.START_Y) == 2) {
+                    enPassantVictim = piece;
+                } //if the pawn reached the far side of the board, promote it
+                else if (isPawnPromoted((Pawn) piece, move)) {
+                    promotePawn((Pawn) piece, move);
+                }
+                //reset the move count since a pawn was moved
+                moveCount = 0;
+            }
+
+            //Check for castling
+            if (piece instanceof King) {
+                //if the king moved two squares horizontally, the move was a castle
+                if (Math.abs(move.TARGET_X - move.START_X) == 2) {
+                    //move the rook; the king was already moved
+                    if (move.TARGET_X == 2) {
+                        //queen-side castle
+                        BOARD[3][move.TARGET_Y] = BOARD[0][move.TARGET_Y];
+                        BOARD[0][move.TARGET_Y] = null;
+                    } else {
+                        //king-side castle
+                        BOARD[5][move.TARGET_Y] = BOARD[7][move.TARGET_Y];
+                        BOARD[7][move.TARGET_Y] = null;
+                    }
+                }
+            }
+            King king = piece.getColor().equalsIgnoreCase("white") ? blackKing : whiteKing;
+            inCheck = king.isInCheck(this);
+            isWhiteTurn = !isWhiteTurn;
+        }
+        return isValid;
+    }
+
+    /**
+     * Gets the piece that is currently eligible to be the victim of an en
+     * passant attack if a piece is currently eligible
+     *
+     * @return the piece that is currently eligible to be the victim of an en
+     * passant attack or null if no piece is currently eligible
+     */
+    public Piece getEnPassantVictim() {
+        return enPassantVictim;
+    }
+
+    /**
+     * Gets the piece at the given column and row in the board. Rows of the
+     * board range from 0 - 7 starting from the black side and counting up to
+     * the white side. Columns range from 0 - 7 starting on the queen side and
+     * counting up to the king side.
+     *
+     * @param column the column of the piece
+     * @param row the row of the piece
+     * @return the Piece at the given column and row or null if no piece is at
+     * that position.
+     */
+    public Piece getPiece(int column, int row) {
+        return BOARD[column][row];
+    }
+
+    /*
+     * Checks if the given pawn is being promoted
+     * @param pawn the pawn to check for promotion
+     * @param move the move made by the pawnthat may make it eligible for promotion
+     * @return true if the pawn is being promoted and false otherwise
+     */
+    private boolean isPawnPromoted(Pawn pawn, Move move) {
+        if (!(pawn instanceof Pawn)) {
+            return false;
+        }
+        switch (pawn.getColor().toLowerCase()) {
+            case "white":
+                return move.TARGET_Y == 7;
+            case "black":
+                return move.TARGET_Y == 0;
+            default:
+                return false;
+        }
+    }
+
+    /*
+     * Promotes the given pawn. The user is asked to select a new piece type via the command line.
+     * @param pawn the pawn that is being promoted
+     * @param move the move that lead to the pawn's promotion
+     */
+    private void promotePawn(Pawn pawn, Move move) {
+        Scanner scanner = new Scanner(System.in);
+        String input;
+        Piece newPiece = null;
+        do {
+            System.out.println("Please select the new type of the piece (Q, R, B, N)");
+            input = scanner.nextLine().toUpperCase();
+            switch (input) {
+                case "Q":
+                    newPiece = new Queen(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "queen");
+                    break;
+                case "R":
+                    newPiece = new Rook(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "rook");
+                    break;
+                case "B":
+                    newPiece = new Bishop(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "bishop");
+                    break;
+                case "N":
+                    newPiece = new Knight(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "knight");
+                    break;
+            }
+        } while (!input.equals("Q") && !input.equals("R") && !input.equals("B") && !input.equals("N"));
+
+        //update the list of pieces that are alive
+        if (pawn.getColor().equalsIgnoreCase("white")) {
+            whitePieces.remove(BOARD[move.TARGET_X][move.TARGET_Y]);
+            whitePieces.add(newPiece);
+        } else {
+            blackPieces.remove(BOARD[move.TARGET_X][move.TARGET_Y]);
+            blackPieces.add(newPiece);
+        }
+        BOARD[move.TARGET_X][move.TARGET_Y] = newPiece;
+    }
+
+    /*
+     * Checks if the column and row are within the bounds of the board.
+     * @param xPos the column
+     * @param yPos the row
+     * @return true if the given column and row are within the bounds of the board and false otherwise
+     */
+    private boolean isInBounds(int xPos, int yPos) {
+        return xPos >= 0 && xPos < 8 && yPos >= 0 && yPos < 8;
+    }
+
+    /**
+     * Checks if pieces of the given color can be attacked by at the given
+     * position by any enemy piece on the next turn
+     *
+     * @param xPos the column
+     * @param yPos the row
+     * @param color the color of pieces that could be the victim of an attack
+     * @return true if an enemy piece can attack at the given position and false
+     */
+    public boolean isThreatened(int xPos, int yPos, String color) {
+        ArrayList<Piece> list = color.equals("white") ? blackPieces : whitePieces;
+        for (Piece piece : list) {
+            if (piece.isValidMove(this, xPos, yPos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the game is a draw because of a stalemate. A stalemate occurs
+     * when it is a player's turn and the player cannot make a valid move, but
+     * the player's king is not in check.
+     *
+     * @return true if a stalemate occurred and false otherwise
+     */
+    public boolean isDrawByStalemate() {
+        ArrayList<Piece> list;
+        King king;
+        if (isWhiteTurn) {
+            king = whiteKing;
+            list = whitePieces;
+        } else {
+            king = blackKing;
+            list = blackPieces;
+        }
+        //Check if any pieces (including the king) have valid moves available
+        for (Piece piece : list) {
+            if (piece.hasValidMoves(this)) {
+                return true;
+            }
+        }
+        //If no pieces can move and the king is not in check, the game is a draw by stalemate.
+        return !king.isInCheck(this);
+    }
+
+    /**
+     * Checks if the game is eligible to be declared a draw no pieces have been
+     * captured and no pawns have moved for the last 50 moves.
+     *
+     * @return true if the game is eligible to be declared a draw by move count
+     * and false otherwise
+     */
+    public boolean isDrawByMoveCount() {
+        return moveCount >= 50;
+    }
+
+    /**
+     * Checks if the game is eligible to be declared a drawn by three-fold
+     * repetition. A draw by three-fold repetition can be declared if the same
+     * board position occurs three times (not necessarily in a row).
+     *
+     * @return true if the game is eligible to be declared a draw by three-fold
+     * repetition and false otherwise
+     */
+    public boolean isDrawByRepetition() {
+        return stateCount.get(getState()) >= 3;
+    }
+
+    /**
+     * Checks if the game is a drawn by insufficient material. A draw by
+     * insufficient material occurs when it is impossible for either player to
+     * checkmate the other player with their remaining pieces.<p>
+     *
+     * Draw by insufficient material occurs in four cases: King vs. King<p>
+     * King and Bishop vs. King<p>
+     * King and Knight vs. King<p>
+     * King and Bishop vs. King and Bishop where the bishops occur different
+     * color spaces.
+     *
+     * @return true if the game is a draw by insufficient material and false
+     * otherwise
+     */
+    public boolean isDrawByInsufficientMaterial() {
+        //King vs. King
+        if (whitePieces.size() == 1 && blackPieces.size() == 1) {
+            return true;
+        } //King and Bishop or King and Knight vs. King
+        else if (whitePieces.size() == 2 && blackPieces.size() == 1) {
+            Piece whitePiece = whitePieces.get(0) == whiteKing ? whitePieces.get(1) : whitePieces.get(0);
+            if (whitePiece instanceof Bishop || whitePiece instanceof Knight) {
+                return true;
+            }
+        } //King and Bishop or King and Knight vs. King
+        else if (blackPieces.size() == 2 && whitePieces.size() == 1) {
+            //find the piece that is not the king
+            Piece blackPiece = blackPieces.get(0) == blackKing ? blackPieces.get(1) : blackPieces.get(0);
+            if (blackPiece instanceof Bishop || blackPiece instanceof Knight) {
+                return true;
+            }
+        } //King and bishop vs king and bishop where the bishops occupy different color squares
+        else if (whitePieces.size() == 2 && blackPieces.size() == 2) {
+            Piece whitePiece = whitePieces.get(0) == whiteKing ? whitePieces.get(1) : whitePieces.get(0);
+            Piece blackPiece = blackPieces.get(0) == blackKing ? blackPieces.get(1) : blackPieces.get(0);
+            if (whitePiece instanceof Bishop && blackPiece instanceof Bishop && !whitePiece.getColor().equalsIgnoreCase(blackPiece.getColor()));
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the game is a mandatory draw. The players do not have
+     * choice.<p>
+     * A mandatory draw occurs in two cases:
+     * <p>
+     * Draw by stalemate<p>
+     * Draw by insufficient material
+     *
+     * @return true if the game is a mandatory draw
+     */
+    public boolean isMandatoryDraw() {
+        return isDrawByStalemate() || isDrawByInsufficientMaterial();
+    }
+
+    /**
+     * Checks if the game may optionally be declared a draw.<p>
+     * A game may be declared a draw in two cases: Fifty or more moves have been
+     * made without capturing a piece or moving a pawn.<p>
+     * Draw by three-fold repetition
+     *
+     * @return true if the game may be declared a draw
+     */
+    public boolean isOptionalDraw() {
+        return isDrawByMoveCount() || isDrawByRepetition();
+    }
+
+    private String getState() {
+        StringBuilder builder = new StringBuilder();
+        Piece piece;
+        char c;
+        for (int i = 0; i < BOARD.length; ++i) {
+            for (int j = 0; j < BOARD.length; ++j) {
+                piece = BOARD[i][j];
+                if (piece != null) {
+                    switch (BOARD[i][j].getType().toLowerCase()) {
+                        case "pawn":
+                            c = piece.getColor().equalsIgnoreCase("white") ? 'P' : 'p';
+                            break;
+                        case "rook":
+                            c = piece.getColor().equalsIgnoreCase("white") ? 'R' : 'r';
+                            break;
+                        case "knight":
+                            c = piece.getColor().equalsIgnoreCase("white") ? 'N' : 'n';
+                            break;
+                        case "bishop":
+                            c = piece.getColor().equalsIgnoreCase("white") ? 'B' : 'b';
+                            break;
+                        case "queen":
+                            c = piece.getColor().equalsIgnoreCase("white") ? 'Q' : 'q';
+                            break;
+                        default: //king
+                            c = piece.getColor().equalsIgnoreCase("white") ? 'K' : 'k';
+                            break;
+                    }
+                } else {
+                    c = ' ';
+                }
+                builder.append(c);
+            }
+        }
+        return builder.toString();
+    }
+
+    /*
+     * Populate the board with the initial pieces in their initial location.
+     */
+    private void initialPopulate() {
+        // Populate Pawns
+        whitePopulate();
+        blackPopulate();
+
+    }
+
+    /*
+     * Populate the board with the initial white pieces in their initial locations
+     */
+    private void whitePopulate() {
+        int x = 6;
+        int y;
+        //Pawns
+        for (y = 0; y < 8; y++) {
+            BOARD[x][y] = new Pawn(x, y, "white", "pawn");
+            whitePieces.add(BOARD[x][y]);
+        }
+        //Rooks
+        BOARD[7][0] = new Rook(6, 0, "white", "rook");
+        BOARD[7][7] = new Rook(6, 7, "white", "rook");
+
+        //Knights
+        BOARD[7][1] = new Knight(6, 1, "white", "knight");
+        BOARD[7][6] = new Knight(6, 6, "white", "knight");
+
+        //Bishops
+        BOARD[7][2] = new Bishop(6, 2, "white", "bishop");
+        BOARD[7][5] = new Bishop(6, 5, "white", "bishop");
+
+        //King
+        BOARD[7][4] = whiteKing = new King(6, 4, "white", "king");
+
+        //Queen
+        BOARD[7][3] = new Queen(6, 5, "white", "queen");
+
+        //add the rest of the pieces to the list of alive pieces
+        for (Piece piece : BOARD[7]) {
+            whitePieces.add(piece);
+        }
+    }
+
+    /*
+     * Populate the board with the initial white pieces in their initial locations
+     */
+    private void blackPopulate() {
+        int x = 1;
+        int y;
+        //Pawns
+        for (y = 0; y < 8; y++) {
+            BOARD[x][y] = new Pawn(x, y, "black", "pawn");
+            blackPieces.add(BOARD[x][y]);
+        }
+        //Rooks
+        BOARD[0][0] = new Rook(0, 0, "black", "rook");
+        BOARD[0][7] = new Rook(0, 7, "black", "rook");
+
+        //Knights
+        BOARD[0][1] = new Knight(0, 1, "black", "knight");
+        BOARD[0][6] = new Knight(0, 6, "black", "knight");
+
+        //Bishops
+        BOARD[0][2] = new Bishop(0, 2, "black", "bishop");
+        BOARD[0][5] = new Bishop(0, 5, "black", "bishop");
+
+        //King
+        BOARD[0][3] = blackKing = new King(0, 3, "black", "king");
+
+        //Queen
+        BOARD[0][4] = new Queen(0, 4, "black", "queen");
+
+        //add the rest of the pieces to the list of alive pieces
+        for (Piece piece : BOARD[0]) {
+            blackPieces.add(piece);
+        }
+    }
+
+    /**
+     * Prints the board to the terminal.
+     */
+    public void printBoard() {
+
+        String type;
+
+        for (int x = 0; x < BOARD.length; x++) {
+            for (int y = 0; y < BOARD.length; y++) {
+                if (BOARD[x][y] != null) {
+                    type = BOARD[x][y].getType();
+                    switch (type) {
+                        case "pawn":
+                            if ("black".equals(BOARD[x][y].getColor())) {
+                                System.out.print(" |PB| ");
+                            } else {
+                                System.out.print(" |PW| ");
+                            }
+                            break;
+                        case "bishop":
+                            if ("black".equals(BOARD[x][y].getColor())) {
+                                System.out.print(" |BB| ");
+                            } else {
+                                System.out.print(" |BW| ");
+                            }
+                            break;
+                        case "king":
+                            if ("black".equals(BOARD[x][y].getColor())) {
+                                System.out.print(" |KB| ");
+                            } else {
+                                System.out.print(" |KW| ");
+                            }
+                            break;
+                        case "knight":
+                            if ("black".equals(BOARD[x][y].getColor())) {
+                                System.out.print(" |HB| ");
+                            } else {
+                                System.out.print(" |HW| ");
+                            }
+                            break;
+                        case "queen":
+                            if ("black".equals(BOARD[x][y].getColor())) {
+                                System.out.print(" |QB| ");
+                            } else {
+                                System.out.print(" |QW| ");
+                            }
+                            break;
+                        case "rook":
+                            if ("black".equals(BOARD[x][y].getColor())) {
+                                System.out.print(" |RB| ");
+                            } else {
+                                System.out.print(" |RW| ");
+                            }
+                            break;
+
+                    }
+                } else {
+                    System.out.print(" |NN| ");
+                }
+            }
+            System.out.println();
+        }
+    }
+}
