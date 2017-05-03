@@ -102,7 +102,7 @@ public class Server {
         for (Socket s : addresses) {
             Message m = null;
             try {
-                s.setSoTimeout(10);
+                s.setSoTimeout(500);
             } catch (SocketException se) {
                 System.err.println("Could not set timeout");
             }
@@ -125,14 +125,16 @@ public class Server {
                                 out = new ObjectOutputStream(sendTo.getOutputStream());
                                 out.writeObject(m);
                                 out.flush();
-                                m = null;
                             } catch (IOException ioe) {
 
                             }
                         } else//Both clients have seen the message, request was accepted
                         if (m.requestAccepted()) {
+                            System.out.println("Return trip!");
                             Socket sender = findSocket(m.getSendingIP());
+                            System.out.println("Sender " + sender);
                             Socket receiver = findSocket(m.getRequestedIP());
+                            System.out.println("Receiver " + receiver);
 
                             Message gameStart = new Message("game", null);
 
@@ -161,10 +163,9 @@ public class Server {
                         } else {
                             Socket sender = findSocket(m.getSendingIP());
                             try {
-                                out = new ObjectOutputStream(sender.getOutputStream());
-                                out.writeObject(m);
-                                out.flush();
-                                m = null;
+                                ObjectOutputStream rOut = new ObjectOutputStream(sender.getOutputStream());
+                                rOut.writeObject(m);
+                                rOut.flush();
                             } catch (IOException ioe) {
 
                             }
@@ -215,11 +216,13 @@ public class Server {
         Socket temp = null;
 
         for (Socket s : addresses) {
-            if (s.getInetAddress().toString().equals(ip)) {
+            String curr = s.getInetAddress().toString();
+            if (curr.equals(ip)) {
                 temp = s;
+                return temp;
             }
         }
-
+        //Why U no return temp?
         return temp;
     }
 

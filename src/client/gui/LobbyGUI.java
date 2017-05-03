@@ -21,7 +21,8 @@ import javax.swing.DefaultListModel;
 public class LobbyGUI extends javax.swing.JFrame {
 
     private static Client c;
-    private Socket gSock;
+    private final Socket gSock;
+    private final String localIP;
 
     /**
      * Creates new form LobbyGUI
@@ -32,6 +33,7 @@ public class LobbyGUI extends javax.swing.JFrame {
         initComponents();
         this.c = c;
         gSock = c.socket;
+        localIP = gSock.getLocalSocketAddress().toString();
         this.setTitle("Chess Lobby");
     }
 
@@ -100,7 +102,7 @@ public class LobbyGUI extends javax.swing.JFrame {
             if (ip != null) {
                 System.out.println("Sending request to: " + ip);
                 Message m = new Message("request", null);
-                m.setSendingIP(gSock.getInetAddress().toString());
+                m.setSendingIP(localIP);
                 m.setRequestedIP(ip);
                 try {
                     ObjectOutputStream out = new ObjectOutputStream(gSock.getOutputStream());
