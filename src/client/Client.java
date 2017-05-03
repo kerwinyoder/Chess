@@ -5,9 +5,10 @@
  */
 package client;
 
+import client.gui.GameGUI;
 import client.gui.LobbyGUI;
-import client.gui.RequestGUI;
 import client.gui.RejectedGUI;
+import client.gui.RequestGUI;
 import communication.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -70,10 +71,12 @@ public class Client {
                 switch (m.getHeader()) {
                     case "game":
                         System.out.println("GAME ON M*****F*****!!!!!");
+                        GameGUI game = new GameGUI();
+                        game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        game.setVisible(true);
                         break;
                     case "list"://Server is distributing the client list
-                        LinkedList<String> players = new LinkedList();
-                        players = (LinkedList) m.getBody();
+                        LinkedList<String> players = (LinkedList) m.getBody();
                         if (!players.isEmpty()) {
                             gui.updateList(players);
                         }
@@ -97,9 +100,13 @@ public class Client {
         }
     }
 
+    /**
+     * If there was a connection error, close the application.
+     */
     private void close() {
         boolean setToClose = true;
         try {
+            System.out.println("There was an error connecting to the server. Please check the IP Address and try again.");
             socket.close();
         } catch (IOException ioe) {
             System.err.println("The socket could not be closed.");

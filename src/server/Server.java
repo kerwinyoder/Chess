@@ -70,7 +70,7 @@ public class Server {
 
     /**
      * Send a list of addresses from clients connected to the server to each
-     * connected client
+     * connected client.
      *
      * @throws IOException
      */
@@ -173,7 +173,7 @@ public class Server {
 
     /**
      * Sends a heartbeat message to a client to validate if the connection is
-     * still active.&nbsp If it is not, the client is removed from the list.
+     * still active.&nbspIf it is not, the client is removed from the list.
      *
      * @throws IOException
      */
