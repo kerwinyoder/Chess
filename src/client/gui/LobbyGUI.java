@@ -33,7 +33,7 @@ public class LobbyGUI extends javax.swing.JFrame {
         initComponents();
         this.c = c;
         gSock = c.socket;
-        localIP = gSock.getLocalSocketAddress().toString();
+        localIP = gSock.getLocalAddress().toString();
         this.setTitle("Chess Lobby");
     }
 
