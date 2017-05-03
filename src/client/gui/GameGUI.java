@@ -5,17 +5,26 @@
  */
 package client.gui;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import javax.swing.JComponent;
+
 /**
  *
  * @author djfearon0
  */
 public class GameGUI extends javax.swing.JFrame {
 
+    private int[][] boardColor;
+
     /**
      * Creates new form GameGUI
      */
     public GameGUI() {
         initComponents();
+        boardColor = new int[8][8];
+        loadBoard();
     }
 
     /**
@@ -27,15 +36,25 @@ public class GameGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        javax.swing.JPanel jPanel1 = new javax.swing.JPanel()
+        {
+            public void paint(Graphics g)
+            {
+                super.paint(g);
+                drawBoard(g);
+            }
+        };
+        ;
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setPreferredSize(new java.awt.Dimension(500, 500));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 428, Short.MAX_VALUE)
+            .addGap(0, 500, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -49,13 +68,13 @@ public class GameGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(190, Short.MAX_VALUE))
+                .addContainerGap(118, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -97,7 +116,30 @@ public class GameGUI extends javax.swing.JFrame {
         });
     }
 
+    private void loadBoard() {
+        int color = 0;
+        for (int i = 0; i < boardColor.length; i++) {
+            for (int j = 0; j < boardColor.length; j++) {
+                boardColor[i][j] = color;
+                color ^= 1;
+            }
+            color ^= 1;
+        }
+    }
+
+    private void drawBoard(Graphics g) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (boardColor[i][j] == 0) {
+                    g.setColor(Color.WHITE);
+                } else {
+                    g.setColor(Color.DARK_GRAY);
+                }
+                g.fillRect(i * 53, j * 53, 53, 53);
+            }
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

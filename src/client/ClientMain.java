@@ -5,6 +5,7 @@
  */
 package client;
 
+import client.gui.GameGUI;
 import java.io.IOException;
 
 /**
@@ -14,7 +15,9 @@ import java.io.IOException;
 public class ClientMain {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        Client c = new Client();
-        c.run();
+//        Client c = new Client();
+//        c.run();
+        GameGUI gg = new GameGUI();
+        gg.setVisible(true);
     }
 }
