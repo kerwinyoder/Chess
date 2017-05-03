@@ -7,6 +7,8 @@ package client.gui;
 
 import client.Client;
 import communication.Message;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -35,6 +37,8 @@ public class LobbyGUI extends javax.swing.JFrame {
         gSock = c.socket;
         localIP = gSock.getLocalAddress().toString();
         this.setTitle("Chess - Lobby");
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
 
     /**
