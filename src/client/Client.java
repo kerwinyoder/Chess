@@ -24,21 +24,21 @@ import javax.swing.JFrame;
  * @author frost
  */
 public class Client {
-    
+
     private int serverPort;
     private LobbyGUI gui;
     private ObjectInputStream in;
     private Random portSelector;
     private Scanner kbinput;
     public Socket socket;
-    
+
     public Client() throws IOException {
         kbinput = new Scanner(System.in);
         portSelector = new Random();
         serverPort = 5000;
         socket = new Socket();
     }
-    
+
     public void run() throws IOException, ClassNotFoundException {
         System.out.print("Please enter the IP Address of the server: ");
         String ip = kbinput.nextLine();
@@ -52,7 +52,7 @@ public class Client {
         //Set the lobby client to be visible to the user
         gui = new LobbyGUI(this);
         gui.setVisible(true);
-        
+
         while (true) {
             Message m = null;
             try {
@@ -62,7 +62,7 @@ public class Client {
             } catch (IOException ioe) {
                 //Nothing was read from the socket
             }
-            
+
             if (m != null) {
                 if (!m.getHeader().equals("probe")) {
                     System.out.println(m.getHeader());
@@ -80,12 +80,10 @@ public class Client {
                         break;
                     case "request":
                         if (m.getRequestSeen() && !m.requestAccepted()) {
-                            System.out.println("Request was rejected");
                             RejectedGUI dg = new RejectedGUI();
-                            dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            dg.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                             dg.setVisible(true);
                         } else {
-                            System.out.println("A request was receieved!!");
                             RequestGUI rg = new RequestGUI(this, m);
                             rg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             rg.setVisible(true);
@@ -95,10 +93,10 @@ public class Client {
                         break;
                 }
             }
-            
+
         }
     }
-    
+
     private void close() {
         boolean setToClose = true;
         try {
@@ -111,5 +109,5 @@ public class Client {
             System.exit(0);
         }
     }
-    
+
 }

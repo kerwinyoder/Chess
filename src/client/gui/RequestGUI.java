@@ -32,6 +32,7 @@ public class RequestGUI extends javax.swing.JFrame {
         this.m = m;
         gSock = c.socket;
         updateRequest();
+        this.setTitle("Game Request");
     }
 
     /**

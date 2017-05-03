@@ -61,7 +61,6 @@ public class Server {
             }
             if (client != null) {
                 if (!addresses.contains(client)) {
-                    System.out.println(client.getInetAddress().toString() + " has connected!");
                     addresses.add(client);
                     sendList();
                 }
@@ -119,7 +118,6 @@ public class Server {
                 switch (m.getHeader()) {
                     case "request":
                         if (!m.getRequestSeen()) {
-                            System.out.println("Request received for processing from: " + m.getSendingIP());
                             Socket sendTo = findSocket(m.getRequestedIP());
                             try {
                                 out = new ObjectOutputStream(sendTo.getOutputStream());
@@ -130,11 +128,8 @@ public class Server {
                             }
                         } else//Both clients have seen the message, request was accepted
                         if (m.requestAccepted()) {
-                            System.out.println("Return trip!");
                             Socket sender = findSocket(m.getSendingIP());
-                            System.out.println("Sender " + sender);
                             Socket receiver = findSocket(m.getRequestedIP());
-                            System.out.println("Receiver " + receiver);
 
                             Message gameStart = new Message("game", null);
 
@@ -144,10 +139,8 @@ public class Server {
                                 ObjectOutputStream outReceiver = new ObjectOutputStream(receiver.getOutputStream());
                                 System.out.println(sender);
                                 System.out.println(receiver);
-                                System.out.println("Output streams created.");
                                 outSender.writeObject(gameStart);
                                 outReceiver.writeObject(gameStart);
-                                System.out.println("Messages sent.");
                                 outSender.flush();
                                 outReceiver.flush();
                             } catch (IOException ioe) {
