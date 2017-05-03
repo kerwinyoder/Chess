@@ -69,8 +69,10 @@ public class Client {
                     System.out.println(m.getHeader());
                 }
                 switch (m.getHeader()) {
+                    case "board":
+
+                        break;
                     case "game":
-                        System.out.println("GAME ON M*****F*****!!!!!");
                         GameGUI game = new GameGUI();
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
@@ -80,6 +82,9 @@ public class Client {
                         if (!players.isEmpty()) {
                             gui.updateList(players);
                         }
+                        break;
+                    case "move":
+
                         break;
                     case "request":
                         if (m.getRequestSeen() && !m.requestAccepted()) {
