@@ -73,7 +73,7 @@ public class Client {
 
                         break;
                     case "game":
-                        GameGUI game = new GameGUI();
+                        GameGUI game = new GameGUI(m.getBody().toString());
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
                         break;

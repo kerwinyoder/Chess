@@ -5,10 +5,19 @@
  */
 package client.gui;
 
+import chess.core.pieces.Piece;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Arrays;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -17,21 +26,33 @@ import javax.swing.JPanel;
  */
 public class GameGUI extends javax.swing.JFrame {
 
-    private int[][] boardColor;
+    private ActionListener buttons;
+    private JButton[][] cells;
     private JPanel jp;
     private Graphics graphics;
+    private static String color;
+    private String[][] pieces = {{"RB", "HB", "BB", "KB", "QB", "BB", "HB", "RB"},
+    {"PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB"},
+    {"NN", "NN", "NN", "NN", "NN", "NN", "NN", "NN"},
+    {"NN", "NN", "NN", "NN", "NN", "NN", "NN", "NN"},
+    {"NN", "NN", "NN", "NN", "NN", "NN", "NN", "NN"},
+    {"NN", "NN", "NN", "NN", "NN", "NN", "NN", "NN"},
+    {"PW", "PW", "PW", "PW", "PW", "PW", "PW", "PW"},
+    {"RW", "HW", "BW", "QW", "KW", "BW", "HW", "RW"}};
 
     /**
      * Creates new form GameGUI
+     *
+     * @param color
      */
-    public GameGUI() {
+    public GameGUI(String color) {
         initComponents();
-        boardColor = new int[8][8];
-        graphics = jp.getGraphics();
-        graphics.setColor(Color.yellow);
-        graphics.fillRect(50, 50, 50, 50);
-        jp.repaint();
-        loadBoard();
+        cells = new JButton[8][8];
+        jPanel1.setLayout(new GridLayout(8, 8));
+        makeButtons();
+        drawPieces();
+
+        repaint();
     }
 
     /**
@@ -43,34 +64,21 @@ public class GameGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        javax.swing.JPanel jPanel1 = jp = new javax.swing.JPanel()
-        {
-            public void paint(Graphics g)
-            {
-                super.paint(g);
-                drawBoard(g);
-            }
-        };
-        ;
+        jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                formMouseClicked(evt);
-            }
-        });
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(500, 500));
+        jPanel1.setPreferredSize(new java.awt.Dimension(440, 440));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addGap(0, 440, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 444, Short.MAX_VALUE)
+            .addGap(0, 439, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -80,30 +88,18 @@ public class GameGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(118, Short.MAX_VALUE))
+                .addContainerGap(165, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
-        // TODO add your handling code here:
-        int x = evt.getX();
-        int y = evt.getY();
-        if((19 < x && x < 460) && (49 < y && y < 490)){
-            int boardX = (int) Math.floor((x - 20) / 55);
-            int boardY = (int) Math.floor((y - 50) / 55);
-            System.out.println(boardX + ", " + boardY);
-        }
-        drawPieces();
-    }//GEN-LAST:event_formMouseClicked
 
     /**
      * @param args the command line arguments
@@ -135,40 +131,111 @@ public class GameGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GameGUI().setVisible(true);
+                new GameGUI(color).setVisible(true);
             }
         });
     }
 
-    private void loadBoard() {
-        int color = 0;
-        for (int i = 0; i < boardColor.length; i++) {
-            for (int j = 0; j < boardColor.length; j++) {
-                boardColor[i][j] = color;
-                color ^= 1;
+    private void drawPieces() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                JButton b = cells[i][j];
+//                b.setText(getPieceCode(pieces[i][j].getType()));
+                b.setText(getPieceCode(pieces[i][j]));
             }
-            color ^= 1;
         }
     }
 
-    private void drawBoard(Graphics g) {
-        graphics = g;
+    private void makeButtons() {
+        int c = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (boardColor[i][j] == 0) {
-                    g.setColor(Color.WHITE);
+                JButton b = new JButton();
+                if (c == 0) {
+                    b.setBackground(Color.WHITE);
+                    b.setForeground(Color.BLACK);
                 } else {
-                    g.setColor(Color.DARK_GRAY);
+                    b.setBackground(Color.BLACK);
+                    b.setForeground(Color.WHITE);
                 }
-                g.fillRect(i * 55, j * 55, 55, 55);
+                jPanel1.add(b);
+                b.setMargin(new Insets(0, 0, 0, 0));
+                b.setFont(new Font("Dialog", Font.PLAIN, 40));
+                b.addActionListener((ActionEvent ae) -> {
+                    int[] click = getButton((JButton) ae.getSource());
+                    System.out.println(Arrays.toString(click));
+                });
+                cells[i][j] = b;
+                c ^= 1;
             }
+            c ^= 1;
         }
     }
-    
-    private void drawPieces(){
-        
+
+    private void updateBoard(String[][] p) {
+        pieces = p;
+        drawPieces();
+        repaint();
+    }
+
+    private int[] getButton(JButton b) {
+        int[] click = new int[2];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (b.equals(cells[i][j])) {
+                    click[0] = i;
+                    click[1] = j;
+                }
+            }
+        }
+        return click;
+    }
+
+    private String getPieceCode(String p) {
+        String code = null;
+        switch (p) {
+            case "KW":
+                code = "\u2654";
+                break;
+            case "QW":
+                code = "\u2655";
+                break;
+            case "RW":
+                code = "\u2656";
+                break;
+            case "BW":
+                code = "\u2657";
+                break;
+            case "HW":
+                code = "\u2658";
+                break;
+            case "PW":
+                code = "\u2659";
+                break;
+
+            case "KB":
+                code = "\u265A";
+                break;
+            case "QB":
+                code = "\u265B";
+                break;
+            case "RB":
+                code = "\u265C";
+                break;
+            case "BB":
+                code = "\u265D";
+                break;
+            case "HB":
+                code = "\u265E";
+                break;
+            case "PB":
+                code = "\u265F";
+                break;
+        }
+        return code;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
