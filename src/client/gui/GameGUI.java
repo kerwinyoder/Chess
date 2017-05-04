@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 /**
  *
@@ -17,6 +18,8 @@ import javax.swing.JComponent;
 public class GameGUI extends javax.swing.JFrame {
 
     private int[][] boardColor;
+    private JPanel jp;
+    private Graphics graphics;
 
     /**
      * Creates new form GameGUI
@@ -24,6 +27,10 @@ public class GameGUI extends javax.swing.JFrame {
     public GameGUI() {
         initComponents();
         boardColor = new int[8][8];
+        graphics = jp.getGraphics();
+        graphics.setColor(Color.yellow);
+        graphics.fillRect(50, 50, 50, 50);
+        jp.repaint();
         loadBoard();
     }
 
@@ -36,7 +43,7 @@ public class GameGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        javax.swing.JPanel jPanel1 = new javax.swing.JPanel()
+        javax.swing.JPanel jPanel1 = jp = new javax.swing.JPanel()
         {
             public void paint(Graphics g)
             {
@@ -47,6 +54,11 @@ public class GameGUI extends javax.swing.JFrame {
         ;
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
+            }
+        });
 
         jPanel1.setPreferredSize(new java.awt.Dimension(500, 500));
 
@@ -58,7 +70,7 @@ public class GameGUI extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 428, Short.MAX_VALUE)
+            .addGap(0, 444, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -74,12 +86,24 @@ public class GameGUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        // TODO add your handling code here:
+        int x = evt.getX();
+        int y = evt.getY();
+        if((19 < x && x < 460) && (49 < y && y < 490)){
+            int boardX = (int) Math.floor((x - 20) / 55);
+            int boardY = (int) Math.floor((y - 50) / 55);
+            System.out.println(boardX + ", " + boardY);
+        }
+        drawPieces();
+    }//GEN-LAST:event_formMouseClicked
 
     /**
      * @param args the command line arguments
@@ -128,6 +152,7 @@ public class GameGUI extends javax.swing.JFrame {
     }
 
     private void drawBoard(Graphics g) {
+        graphics = g;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (boardColor[i][j] == 0) {
@@ -135,9 +160,13 @@ public class GameGUI extends javax.swing.JFrame {
                 } else {
                     g.setColor(Color.DARK_GRAY);
                 }
-                g.fillRect(i * 53, j * 53, 53, 53);
+                g.fillRect(i * 55, j * 55, 55, 55);
             }
         }
+    }
+    
+    private void drawPieces(){
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
