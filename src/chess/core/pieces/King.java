@@ -36,7 +36,7 @@ public class King extends Piece {
         switch (deltaX) {
             case 0:
             case 1:
-                if ((deltaY == 0 || deltaY == 1) && !board.isThreatened(xPos, yPos, COLOR)) {
+                if ((deltaY == 0 || deltaY == 1) && !board.isThreatened(targetXPos, targetYPos, COLOR)) {
                     hasMoved = true;
                     return true;
                 } else {
