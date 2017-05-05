@@ -198,39 +198,18 @@ public class GameGUI extends javax.swing.JFrame {
     }
 
     private void drawPieces() {
-        if (color != null) {
-            switch (color) {
-                case "white":
-                    for (int i = 0; i < 8; i++) {
-                        for (int j = 0; j < 8; j++) {
-                            JButton b = cells[i][j];
-                            if (pieces[i][j] != null) {
-                                b.setText(getPieceCode(pieces[i][j]));
-                                if (pieces[i][j].getColor().equals("black")) {
-                                    b.setForeground(Color.BLACK);
-                                } else {
-                                    b.setForeground(Color.WHITE);
-                                }
-                            }
-                        }
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                JButton b = cells[i][j];
+                if (pieces[i][j] != null) {
+                    b.setText(getPieceCode(pieces[i][j]));
+                    if (pieces[i][j].getColor().equals("black")) {
+                        b.setForeground(Color.BLACK);
+                    } else {
+                        b.setForeground(Color.WHITE);
                     }
-                    break;
-                case "black":
-                    for (int i = 7; i >= 0; i--) {
-                        for (int j = 7; j >= 0; j--) {
-                            JButton b = cells[i][j];
-                            if (pieces[i][j] != null) {
-                                b.setText(getPieceCode(pieces[(7 - i)][(7 - j)]));
-                                if (pieces[i][j].getColor().equals("black")) {
-                                    b.setForeground(Color.BLACK);
-                                } else {
-                                    b.setForeground(Color.WHITE);
-                                }
-                            }
-                        }
-                    }
-                    break;
-            };
+                }
+            }
         }
     }
 
@@ -266,7 +245,7 @@ public class GameGUI extends javax.swing.JFrame {
 
     public void updateBoard(Piece[][] p) {
         if ((!Arrays.deepEquals(pieces, p) && !myTurn) || (!Arrays.deepEquals(pieces, p) && myTurn)) {
-            pieces = p;
+//                pieces = p;
             myTurn = !myTurn;
             if (myTurn) {
                 jTextField1.setText("Your turn!");
