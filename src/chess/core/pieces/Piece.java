@@ -1,6 +1,7 @@
 package chess.core.pieces;
 
 import chess.core.Board;
+import java.io.Serializable;
 
 /**
  * A piece for the Chess game
@@ -9,7 +10,7 @@ import chess.core.Board;
  * @author Kerwin Yoder
  * @version 2017.05.02
  */
-public abstract class Piece {
+public abstract class Piece implements Serializable {
 
     /**
      * The column of the piece's current position
@@ -25,6 +26,7 @@ public abstract class Piece {
      * The color of the piece
      */
     protected final String COLOR;
+
 
     /**
      * The type of the piece

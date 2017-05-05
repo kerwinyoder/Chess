@@ -418,6 +418,14 @@ public class Board {
         }
         return builder.toString();
     }
+    
+    /**
+     * Gets the game board array
+     * @return the game board array
+     */
+    public Piece[][] getBoard() {
+        return BOARD;
+    }
 
     /*
      * Populate the board with the initial pieces in their initial location.
