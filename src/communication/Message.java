@@ -16,6 +16,7 @@ public class Message implements Serializable {
     private boolean requestAccepted;
     private boolean requestSeen;
     private Object body;
+    private String color;
     private String header;
     private String requestedIP;
     private String sendingIP;
@@ -27,6 +28,7 @@ public class Message implements Serializable {
         requestSeen = false;
         requestedIP = null;
         sendingIP = null;
+        color = "";
     }
 
     public void setHeader(String h) {
@@ -75,6 +77,14 @@ public class Message implements Serializable {
 
     public boolean getRequestSeen() {
         return requestSeen;
+    }
+    
+    public void setColor(String c){
+        color = c;
+    }
+    
+    public String getColor(){
+        return color;
     }
 
 }

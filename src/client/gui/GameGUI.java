@@ -7,19 +7,19 @@ package client.gui;
 
 import chess.core.Game;
 import chess.core.pieces.Piece;
+import client.Client;
+import communication.MoveMessage;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 /**
  *
@@ -27,24 +27,33 @@ import javax.swing.JPanel;
  */
 public class GameGUI extends javax.swing.JFrame {
 
+    private boolean myTurn = false;
+    private int[] moveFrom;
+    private int[] moveTo;
+
     private ActionListener buttons;
-    private Color darkCell = new Color(74, 165, 74);
-    private Color lightCell = new Color(212, 212, 198);
+    private static Client client;
+    private final Color darkCell = new Color(74, 165, 74);
+    private final Color lightCell = new Color(212, 212, 198);
     private JButton[][] cells;
-    private JPanel jp;
-    private Graphics graphics;
     private static String color;
     private Piece[][] pieces;
 
     /**
      * Creates new form GameGUI
      *
-     * @param color
+     * @param c
      */
-    public GameGUI(String color) {
+    public GameGUI(Client c) {
         initComponents();
+        client = c;
+        color = null;
+        moveFrom = null;
+        moveTo = null;
         cells = new JButton[8][8];
         jPanel1.setLayout(new GridLayout(8, 8));
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         makeButtons();
         drawPieces();
 
@@ -61,6 +70,10 @@ public class GameGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -78,6 +91,23 @@ public class GameGUI extends javax.swing.JFrame {
             .addGap(0, 474, Short.MAX_VALUE)
         );
 
+        jButton1.setText("Submit Move");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jTextField1.setEditable(false);
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
+        jTextPane1.setText("Welcome to the game!\n\nWhen it is your turn, click a square containing a piece to choose which one you want to move. After that, click a square that you want to move the piece to.\n\nYou can submit your move by clicking the \"Submit Move\" button above this pane. Keep an eye on the message box above the submit button. It will let you know when it is your turn and when you have tried an invalid move.\n\nHappy playing!");
+        jScrollPane1.setViewportView(jTextPane1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -85,18 +115,48 @@ public class GameGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(165, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                    .addComponent(jTextField1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1)))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        if (moveFrom != null && moveTo != null) {
+            int[] move = {moveFrom[0], moveFrom[1], moveTo[0], moveTo[0]};
+            MoveMessage m = new MoveMessage(move);
+            client.sendMove(m);
+            unHighlight();
+            moveFrom = null;
+            moveTo = null;
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -128,24 +188,45 @@ public class GameGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GameGUI(color).setVisible(true);
+                new GameGUI(client).setVisible(true);
             }
         });
     }
 
     private void drawPieces() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                JButton b = cells[i][j];
-                if (pieces[i][j] != null) {
-                    b.setText(getPieceCode(pieces[i][j]));
-                    if (pieces[i][j].getColor().equals("black")) {
-                        b.setForeground(Color.BLACK);
-                    } else {
-                        b.setForeground(Color.WHITE);
+        if (color != null) {
+            switch (color) {
+                case "white":
+                    for (int i = 0; i < 8; i++) {
+                        for (int j = 0; j < 8; j++) {
+                            JButton b = cells[i][j];
+                            if (pieces[i][j] != null) {
+                                b.setText(getPieceCode(pieces[i][j]));
+                                if (pieces[i][j].getColor().equals("black")) {
+                                    b.setForeground(Color.BLACK);
+                                } else {
+                                    b.setForeground(Color.WHITE);
+                                }
+                            }
+                        }
                     }
-                }
-            }
+                    break;
+                case "black":
+                    for (int i = 7; i >= 0; i--) {
+                        for (int j = 7; j >= 0; j--) {
+                            JButton b = cells[i][j];
+                            if (pieces[i][j] != null) {
+                                b.setText(getPieceCode(pieces[(7 - i)][(7 - j)]));
+                                if (pieces[i][j].getColor().equals("black")) {
+                                    b.setForeground(Color.BLACK);
+                                } else {
+                                    b.setForeground(Color.WHITE);
+                                }
+                            }
+                        }
+                    }
+                    break;
+            };
         }
     }
 
@@ -163,8 +244,14 @@ public class GameGUI extends javax.swing.JFrame {
                 b.setMargin(new Insets(0, 0, 0, 0));
                 b.setFont(new Font("Dialog", Font.PLAIN, 40));
                 b.addActionListener((ActionEvent ae) -> {
-                    int[] click = getButton((JButton) ae.getSource());
-                    System.out.println(Arrays.toString(click));
+                    if (myTurn) {
+                        int[] click = getButton((JButton) ae.getSource());
+                        if (moveFrom == null) {
+                            moveFrom = click;
+                        } else if (moveFrom != null && moveTo == null) {
+                            moveTo = click;
+                        }
+                    }
                 });
                 cells[i][j] = b;
                 c ^= 1;
@@ -173,10 +260,31 @@ public class GameGUI extends javax.swing.JFrame {
         }
     }
 
-    private void updateBoard(Piece[][] p) {
-        pieces = p;
+    public void updateBoard(Piece[][] p) {
+        if ((!Arrays.deepEquals(pieces, p) && !myTurn) || (!Arrays.deepEquals(pieces, p) && myTurn)) {
+            pieces = p;
+            myTurn = !myTurn;
+            if(myTurn){
+                jTextField1.setText("Your turn!");
+            } else {
+                jTextField1.setText("Opponent's turn!");
+            }
+        } else if(Arrays.deepEquals(pieces, p) && myTurn){
+            jTextField1.setText("Invalid Move!");
+        }
         drawPieces();
         repaint();
+    }
+
+    public void setColor(String c) {
+        color = c;
+        if (c.equals("white")) {
+            myTurn = true;
+        }
+    }
+
+    public boolean colorSet() {
+        return color != null;
     }
 
     private int[] getButton(JButton b) {
@@ -186,7 +294,19 @@ public class GameGUI extends javax.swing.JFrame {
                 if (b.equals(cells[i][j])) {
                     click[0] = i;
                     click[1] = j;
+                    b.setBorder(new LineBorder(Color.RED));
                 }
+            }
+        }
+        return click;
+    }
+
+    private int[] unHighlight() {
+        int[] click = new int[2];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                JButton b = cells[i][j];
+                b.setBorder(null);
             }
         }
         return click;
@@ -251,6 +371,10 @@ public class GameGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextPane jTextPane1;
     // End of variables declaration//GEN-END:variables
 }

@@ -15,9 +15,7 @@ import java.io.IOException;
 public class ClientMain {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        Client c = new Client();
-//        c.run();
-        GameGUI gg = new GameGUI("white");
-        gg.setVisible(true);
+        Client c = new Client();
+        c.run();
     }
 }

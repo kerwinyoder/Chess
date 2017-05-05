@@ -5,19 +5,24 @@
  */
 package client;
 
+import chess.core.pieces.Piece;
 import client.gui.GameGUI;
 import client.gui.LobbyGUI;
 import client.gui.RejectedGUI;
 import client.gui.RequestGUI;
 import communication.Message;
+import communication.MoveMessage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -29,6 +34,7 @@ public class Client {
     private int serverPort;
     private LobbyGUI gui;
     private ObjectInputStream in;
+    private ObjectOutputStream out;
     private Random portSelector;
     private Scanner kbinput;
     public Socket socket;
@@ -54,6 +60,11 @@ public class Client {
         gui = new LobbyGUI(this);
         gui.setVisible(true);
 
+        GameGUI game = null;
+        
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush();
+
         while (true) {
             Message m = null;
             try {
@@ -70,21 +81,24 @@ public class Client {
                 }
                 switch (m.getHeader()) {
                     case "board":
-
+                        if (game != null) {
+                            if(!m.getColor().equals("") && !game.colorSet()){
+                                game.setColor(m.getColor());
+                            }
+                            game.updateBoard((Piece[][]) m.getBody());
+                        }
                         break;
                     case "game":
-                        GameGUI game = new GameGUI(m.getBody().toString());
+                        game = new GameGUI(this);
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
+                        gui.setVisible(false);
                         break;
                     case "list"://Server is distributing the client list
                         LinkedList<String> players = (LinkedList) m.getBody();
                         if (!players.isEmpty()) {
                             gui.updateList(players);
                         }
-                        break;
-                    case "move":
-
                         break;
                     case "request":
                         if (m.getRequestSeen() && !m.requestAccepted()) {
@@ -102,6 +116,15 @@ public class Client {
                 }
             }
 
+        }
+    }
+    
+    public void sendMove(MoveMessage m){
+        try{
+            out.writeObject(m);
+            out.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
