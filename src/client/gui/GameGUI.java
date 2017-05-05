@@ -5,6 +5,7 @@
  */
 package client.gui;
 
+import chess.core.Game;
 import chess.core.pieces.Piece;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,18 +28,13 @@ import javax.swing.JPanel;
 public class GameGUI extends javax.swing.JFrame {
 
     private ActionListener buttons;
+    private Color darkCell = new Color(74, 165, 74);
+    private Color lightCell = new Color(212, 212, 198);
     private JButton[][] cells;
     private JPanel jp;
     private Graphics graphics;
     private static String color;
-    private String[][] pieces = {{"RB", "HB", "BB", "KB", "QB", "BB", "HB", "RB"},
-    {"PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB"},
-    {"NN", "NN", "NN", "NN", "NN", "NN", "NN", "NN"},
-    {"NN", "NN", "NN", "NN", "NN", "NN", "NN", "NN"},
-    {"NN", "NN", "NN", "NN", "NN", "NN", "NN", "NN"},
-    {"NN", "NN", "NN", "NN", "NN", "NN", "NN", "NN"},
-    {"PW", "PW", "PW", "PW", "PW", "PW", "PW", "PW"},
-    {"RW", "HW", "BW", "QW", "KW", "BW", "HW", "RW"}};
+    private Piece[][] pieces;
 
     /**
      * Creates new form GameGUI
@@ -67,6 +63,7 @@ public class GameGUI extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(440, 440));
 
@@ -78,7 +75,7 @@ public class GameGUI extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 439, Short.MAX_VALUE)
+            .addGap(0, 474, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -94,7 +91,7 @@ public class GameGUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -140,8 +137,14 @@ public class GameGUI extends javax.swing.JFrame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 JButton b = cells[i][j];
-//                b.setText(getPieceCode(pieces[i][j].getType()));
-                b.setText(getPieceCode(pieces[i][j]));
+                if (pieces[i][j] != null) {
+                    b.setText(getPieceCode(pieces[i][j]));
+                    if (pieces[i][j].getColor().equals("black")) {
+                        b.setForeground(Color.BLACK);
+                    } else {
+                        b.setForeground(Color.WHITE);
+                    }
+                }
             }
         }
     }
@@ -152,11 +155,9 @@ public class GameGUI extends javax.swing.JFrame {
             for (int j = 0; j < 8; j++) {
                 JButton b = new JButton();
                 if (c == 0) {
-                    b.setBackground(Color.WHITE);
-                    b.setForeground(Color.BLACK);
+                    b.setBackground(lightCell);
                 } else {
-                    b.setBackground(Color.BLACK);
-                    b.setForeground(Color.WHITE);
+                    b.setBackground(darkCell);
                 }
                 jPanel1.add(b);
                 b.setMargin(new Insets(0, 0, 0, 0));
@@ -172,7 +173,7 @@ public class GameGUI extends javax.swing.JFrame {
         }
     }
 
-    private void updateBoard(String[][] p) {
+    private void updateBoard(Piece[][] p) {
         pieces = p;
         drawPieces();
         repaint();
@@ -191,46 +192,60 @@ public class GameGUI extends javax.swing.JFrame {
         return click;
     }
 
-    private String getPieceCode(String p) {
+    private String getPieceCode(Piece p) {
         String code = null;
-        switch (p) {
-            case "KW":
-                code = "\u2654";
+        boolean c;
+
+        if (p.getColor().equals("white")) {
+            c = true;
+        } else {
+            c = false;
+        }
+
+        switch (p.getType()) {
+            case "king":
+                if (c) {
+                    code = "\u2654";
+                } else {
+                    code = "\u265A";
+                }
                 break;
-            case "QW":
-                code = "\u2655";
+            case "queen":
+                if (c) {
+                    code = "\u2655";
+                } else {
+                    code = "\u265B";
+                }
                 break;
-            case "RW":
-                code = "\u2656";
+            case "rook":
+                if (c) {
+                    code = "\u2656";
+                } else {
+                    code = "\u265C";
+                }
                 break;
-            case "BW":
-                code = "\u2657";
+            case "bishop":
+                if (c) {
+                    code = "\u2657";
+                } else {
+                    code = "\u265D";
+                }
                 break;
-            case "HW":
-                code = "\u2658";
+            case "knight":
+                if (c) {
+                    code = "\u2658";
+                } else {
+                    code = "\u265E";
+                }
                 break;
-            case "PW":
-                code = "\u2659";
+            case "pawn":
+                if (c) {
+                    code = "\u2659";
+                } else {
+                    code = "\u265F";
+                }
                 break;
 
-            case "KB":
-                code = "\u265A";
-                break;
-            case "QB":
-                code = "\u265B";
-                break;
-            case "RB":
-                code = "\u265C";
-                break;
-            case "BB":
-                code = "\u265D";
-                break;
-            case "HB":
-                code = "\u265E";
-                break;
-            case "PB":
-                code = "\u265F";
-                break;
         }
         return code;
     }
