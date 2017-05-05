@@ -200,9 +200,9 @@ public class GameGUI extends javax.swing.JFrame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 JButton b = cells[i][j];
-                if (pieces[i][j] != null) {
-                    b.setText(getPieceCode(pieces[i][j]));
-                    if (pieces[i][j].getColor().equals("black")) {
+                if (pieces[j][i] != null) {
+                    b.setText(getPieceCode(pieces[j][i]));
+                    if (pieces[j][i].getColor().equals("black")) {
                         b.setForeground(Color.BLACK);
                     } else {
                         b.setForeground(Color.WHITE);
