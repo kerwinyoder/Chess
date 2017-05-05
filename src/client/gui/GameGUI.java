@@ -38,6 +38,7 @@ public class GameGUI extends javax.swing.JFrame {
     private JButton[][] cells;
     private static String color;
     private Piece[][] pieces;
+    private Game game;
 
     /**
      * Creates new form GameGUI
@@ -47,6 +48,9 @@ public class GameGUI extends javax.swing.JFrame {
     public GameGUI(Client c) {
         initComponents();
         client = c;
+        game = new Game();
+        game.initialPopulate();
+        pieces = game.getBoard();
         color = null;
         moveFrom = null;
         moveTo = null;
@@ -264,12 +268,12 @@ public class GameGUI extends javax.swing.JFrame {
         if ((!Arrays.deepEquals(pieces, p) && !myTurn) || (!Arrays.deepEquals(pieces, p) && myTurn)) {
             pieces = p;
             myTurn = !myTurn;
-            if(myTurn){
+            if (myTurn) {
                 jTextField1.setText("Your turn!");
             } else {
                 jTextField1.setText("Opponent's turn!");
             }
-        } else if(Arrays.deepEquals(pieces, p) && myTurn){
+        } else if (Arrays.deepEquals(pieces, p) && myTurn) {
             jTextField1.setText("Invalid Move!");
         }
         drawPieces();

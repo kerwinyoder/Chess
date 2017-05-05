@@ -3,13 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/frost/Desktop/COSC%20636/Programming%20Project/chess/src/server/Server.java</file>
-            <file>file:/C:/Users/frost/Desktop/COSC%20636/Programming%20Project/chess/src/client/gui/GameGUI.java</file>
-            <file>file:/C:/Users/frost/Desktop/COSC%20636/Programming%20Project/chess/src/client/gui/RejectedGUI.java</file>
-            <file>file:/C:/Users/frost/Desktop/COSC%20636/Programming%20Project/chess/src/client/gui/RequestGUI.java</file>
-            <file>file:/C:/Users/frost/Desktop/COSC%20636/Programming%20Project/chess/src/client/gui/LobbyGUI.java</file>
-            <file>file:/C:/Users/frost/Desktop/COSC%20636/Programming%20Project/chess/src/client/ClientMain.java</file>
-            <file>file:/C:/Users/frost/Desktop/COSC%20636/Programming%20Project/chess/src/client/Client.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/communication/Message.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/client/ClientMain.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/chess/core/Game.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/client/gui/RequestGUI.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/client/gui/LobbyGUI.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/server/Server.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/client/gui/RejectedGUI.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/chess/core/pieces/Piece.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/client/gui/GameGUI.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/server/GameConnection.java</file>
+            <file>file:/C:/Users/djfearon0/Desktop/GitHub/chess/src/client/Client.java</file>
         </group>
     </open-files>
 </project-private>

@@ -17,6 +17,7 @@ public class Game {
     private final Piece[][] board;
     private int whitePieces;
     private int blackPieces;
+    private String[][] b = {{"", ""}, {"", ""}};
 
     public Game() {
         this.board = new Piece[8][8];
@@ -31,7 +32,6 @@ public class Game {
         blackPopulate();
 
     }
-
 
     private void whitePopulate() {
         int x = 6;
@@ -150,4 +150,7 @@ public class Game {
 
     }
 
+    public Piece[][] getBoard() {
+        return board;
+    }
 }

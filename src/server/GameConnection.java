@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,31 +35,38 @@ public class GameConnection implements Runnable {
     private Game g;
     private Random rand;
 
-    public GameConnection(Socket s1, Socket s2, Server server) {
+    public GameConnection(Socket s1, ObjectInputStream s1In, Socket s2, ObjectInputStream s2In, Server server) {
         this.server = server;
-        
+
         player1 = s1;
-        try{
-        p1Out = new ObjectOutputStream(player1.getOutputStream());
-        p1Out.flush();
-        p1In = new ObjectInputStream(player1.getInputStream());
-        } catch (IOException ex) {
-            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         player2 = s2;
-        try{
-        p2Out = new ObjectOutputStream(player1.getOutputStream());
-        p2Out.flush();
-        p2In = new ObjectInputStream(player1.getInputStream());
+        try {
+            player1.setSoTimeout(0);
+            player2.setSoTimeout(0);
+        } catch (SocketException ex) {
+            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            p1Out = new ObjectOutputStream(player1.getOutputStream());
+            p2Out = new ObjectOutputStream(player2.getOutputStream());
+
+            p1Out.reset();
+            p1Out.flush();
+
+            p2Out.reset();
+            p2Out.flush();
+
+            p1In = s1In;
+            p2In = s2In;
         } catch (IOException ex) {
             Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         rand = new Random();
         g = new Game();
         g.initialPopulate();
-        
+
         Message p1M = new Message("board", null);
         Message p2M = new Message("board", null);
 
@@ -69,14 +78,27 @@ public class GameConnection implements Runnable {
             p1Color = "black";
             p2Color = "white";
         }
-        
+
         p1M.setColor(p1Color);
         p2M.setColor(p2Color);
-        
-//        p1M.setBody(g.getBoard());
-//        p1M.setBody(g.getBoard());
-//        p1Out.writeObject(p1M);
-//        p2Out.writeObject(p2M);
+
+        p1M.setBody(g.getBoard());
+        p2M.setBody(g.getBoard());
+        try {
+            p1Out.writeUnshared(p1M);
+            p1Out.flush();
+            System.out.println("Made it!");
+        } catch (IOException ioe) {
+            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+        }
+
+        try {
+            p2Out.writeUnshared(p2M);
+            p2Out.flush();
+            System.out.println("Made it!");
+        } catch (IOException ioe) {
+            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+        }
     }
 
     @Override

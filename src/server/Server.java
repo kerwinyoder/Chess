@@ -57,7 +57,7 @@ public class Server {
             try {
                 client = listener.accept();
             } catch (SocketTimeoutException ste) {
-                checkDisconnects();
+//                checkDisconnects();
             }
             if (client != null) {
                 if (!addresses.contains(client)) {
@@ -131,27 +131,37 @@ public class Server {
                             Socket sender = findSocket(m.getSendingIP());
                             Socket receiver = findSocket(m.getRequestedIP());
 
+                            ObjectInputStream sIn = null;
+                            try {
+                                sIn = new ObjectInputStream(sender.getInputStream());
+                            } catch (IOException ioe) {
+
+                            }
+
+                            addresses.remove(sender);
+                            addresses.remove(receiver);
+
                             Message gameStart = new Message("game", null);
+                            ObjectOutputStream outSender = null;
+                            ObjectOutputStream outReceiver = null;
 
                             //Send messages to both clients to send them into the game GUI
                             try {
-                                ObjectOutputStream outSender = new ObjectOutputStream(sender.getOutputStream());
-                                ObjectOutputStream outReceiver = new ObjectOutputStream(receiver.getOutputStream());
-                                System.out.println(sender);
-                                System.out.println(receiver);
+                                outSender = new ObjectOutputStream(sender.getOutputStream());
+                                outReceiver = new ObjectOutputStream(receiver.getOutputStream());
                                 outSender.writeObject(gameStart);
                                 outReceiver.writeObject(gameStart);
                                 outSender.flush();
+//                                outSender.reset();
                                 outReceiver.flush();
+//                                outSender.reset();
                             } catch (IOException ioe) {
                                 //Whoops
                                 System.out.println("Could not send to either of the clients");
                             }
 
                             //Remove the two sockets from the list to keep them from showing up in the list
-                            addresses.remove(sender);
-                            addresses.remove(receiver);
-                            GameConnection gc = new GameConnection(sender, receiver, this);
+                            GameConnection gc = new GameConnection(sender, sIn, receiver, in, this);
                             threadPool.execute(gc);
                         } else {
                             Socket sender = findSocket(m.getSendingIP());

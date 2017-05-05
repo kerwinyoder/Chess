@@ -61,7 +61,7 @@ public class Client {
         gui.setVisible(true);
 
         GameGUI game = null;
-        
+
         out = new ObjectOutputStream(socket.getOutputStream());
         out.flush();
 
@@ -82,7 +82,7 @@ public class Client {
                 switch (m.getHeader()) {
                     case "board":
                         if (game != null) {
-                            if(!m.getColor().equals("") && !game.colorSet()){
+                            if (!m.getColor().equals("") && !game.colorSet()) {
                                 game.setColor(m.getColor());
                             }
                             game.updateBoard((Piece[][]) m.getBody());
@@ -93,6 +93,8 @@ public class Client {
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
                         gui.setVisible(false);
+                        out.writeObject(1);
+                        out.flush();
                         break;
                     case "list"://Server is distributing the client list
                         LinkedList<String> players = (LinkedList) m.getBody();
@@ -118,9 +120,9 @@ public class Client {
 
         }
     }
-    
-    public void sendMove(MoveMessage m){
-        try{
+
+    public void sendMove(MoveMessage m) {
+        try {
             out.writeObject(m);
             out.flush();
         } catch (IOException ex) {

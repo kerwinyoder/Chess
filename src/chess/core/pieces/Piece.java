@@ -5,17 +5,19 @@
  */
 package chess.core.pieces;
 
+import java.io.Serializable;
+
 /**
  *
  * @author ragilmore0
  */
-public abstract class Piece {
+public abstract class Piece implements Serializable {
 
     private int xPos;
     private int yPos;
     private String color;
     private final String pieceType;
-    //private boolean alive; Maybe? 
+    //private boolean alive; Maybe?
 
     public Piece(int x, int y, String color, String type) {
         this.xPos = x;
