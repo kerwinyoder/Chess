@@ -71,9 +71,9 @@ public class Pawn extends Piece {
      */
     private boolean hasMoved() {
         if (COLOR.equalsIgnoreCase("white")) {
-            return yPos == 6;
+            return yPos != 6;
         } else {
-            return yPos == 1;
+            return yPos != 1;
         }
     }
 

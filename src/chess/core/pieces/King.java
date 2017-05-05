@@ -57,7 +57,7 @@ public class King extends Piece {
                         }
                     }
                     rook = board.getPiece(0, yPos);
-                    return rook != null && rook instanceof Rook && !((Rook) rook).hasMoved() && isBlockedHorizontally(board, 0);
+                    return rook != null && rook instanceof Rook && !((Rook) rook).hasMoved() && !isBlockedHorizontally(board, 0);
                 } //king-side castle 
                 else {
                     //if the king is in check, will pass through check, or will be in check after moving, he cannot castle
@@ -67,7 +67,7 @@ public class King extends Piece {
                         }
                     }
                     rook = board.getPiece(7, yPos);
-                    return rook != null && rook instanceof Rook && !((Rook) rook).hasMoved() && isBlockedHorizontally(board, 7);
+                    return rook != null && rook instanceof Rook && !((Rook) rook).hasMoved() && !isBlockedHorizontally(board, 7);
                 }
             default:
                 //invalid isValidMove

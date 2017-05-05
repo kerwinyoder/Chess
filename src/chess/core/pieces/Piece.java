@@ -187,10 +187,10 @@ public abstract class Piece {
         int min = Math.min(xPos, targetXPos);
         for (int i = min + 1; i < max; ++i) {
             if (board.getPiece(i, yPos) != null) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -212,10 +212,10 @@ public abstract class Piece {
         int min = Math.min(yPos, targetYPos);
         for (int i = min + 1; i < max; ++i) {
             if (board.getPiece(xPos, i) != null) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -228,38 +228,50 @@ public abstract class Piece {
      * @return true if the path is blocked diagonally and false otherwise
      */
     protected final boolean isBlockedDiagonally(Board board, int targetXPos, int targetYPos) {
-        int x = Math.min(xPos, targetXPos) + 1;
-        int endX = Math.max(xPos, targetXPos);
+        int x;
         int y;
-        int endY;
-
-        if (x == xPos) {
-            y = yPos;
-            endY = targetYPos;
-        } else {
-            y = targetYPos;
-            endY = yPos;
-        }
-        //scanning diagonally up (bottom-left to top-right)
-        if (y < endY) {
-            while (x < endX && y < endY) {
+        if (xPos <= targetXPos && yPos <= targetYPos) {
+            x = xPos + 1;
+            y = yPos + 1;
+            while (x < targetXPos && yPos < targetYPos) {
                 if (board.getPiece(x, y) != null) {
-                    return false;
+                    return true;
                 }
                 ++x;
                 ++y;
             }
-        } //scanning diagonally down (top-left to bottom-right)
-        else {
-            while (x < endX && y > endY) {
+        } else if (xPos <= targetXPos && yPos > targetYPos) {
+            x = xPos + 1;
+            y = yPos - 1;
+            while (x < targetXPos && yPos > targetYPos) {
                 if (board.getPiece(x, y) != null) {
-                    return false;
+                    return true;
                 }
                 ++x;
                 --y;
             }
+        } else if (xPos > targetXPos && yPos <= targetYPos) {
+            x = xPos - 1;
+            y = yPos + 1;
+            while (x > targetXPos && yPos < targetYPos) {
+                if (board.getPiece(x, y) != null) {
+                    return true;
+                }
+                --x;
+                ++y;
+            }
+        } else if (xPos > targetXPos && yPos > targetYPos) {
+            x = xPos - 1;
+            y = yPos - 1;
+            while (x > targetXPos && yPos > targetYPos) {
+                if (board.getPiece(x, y) != null) {
+                    return true;
+                }
+                --x;
+                --y;
+            }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -272,7 +284,7 @@ public abstract class Piece {
      * otherwise
      */
     protected final boolean isOccupied(Board board, int targetXPos, int targetYPos) {
-        return board.getPiece(targetXPos, targetYPos) == null;
+        return board.getPiece(targetXPos, targetYPos) != null;
     }
 
     /**

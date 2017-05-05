@@ -76,7 +76,14 @@ public class Board {
             //Move the piece
             BOARD[move.START_X][move.START_Y] = null;
             Piece victim = BOARD[move.TARGET_X][move.TARGET_Y];
+            //handle en passant moves
+            if (piece instanceof Pawn && victim == null && move.TARGET_X - move.START_X != 0) {
+                victim = BOARD[move.TARGET_X][move.START_Y];
+                BOARD[move.TARGET_X][move.START_Y] = null;
+            }
             BOARD[move.TARGET_X][move.TARGET_Y] = piece;
+            piece.setXPos(move.TARGET_X);
+            piece.setYPos(move.TARGET_Y);
             ++moveCount;
 
             //update the state count
@@ -175,9 +182,9 @@ public class Board {
         }
         switch (pawn.getColor().toLowerCase()) {
             case "white":
-                return move.TARGET_Y == 7;
-            case "black":
                 return move.TARGET_Y == 0;
+            case "black":
+                return move.TARGET_Y == 7;
             default:
                 return false;
         }
@@ -418,34 +425,34 @@ public class Board {
      * Populate the board with the initial white pieces in their initial locations
      */
     private void whitePopulate() {
-        int x = 6;
-        int y;
+        int x;
+        int y = 6;
         //Pawns
-        for (y = 0; y < 8; y++) {
+        for (x = 0; x < 8; x++) {
             BOARD[x][y] = new Pawn(x, y, "white", "pawn");
             whitePieces.add(BOARD[x][y]);
         }
         //Rooks
-        BOARD[7][0] = new Rook(6, 0, "white", "rook");
-        BOARD[7][7] = new Rook(6, 7, "white", "rook");
+        BOARD[0][7] = new Rook(0, 7, "white", "rook");
+        BOARD[7][7] = new Rook(7, 7, "white", "rook");
 
         //Knights
-        BOARD[7][1] = new Knight(6, 1, "white", "knight");
-        BOARD[7][6] = new Knight(6, 6, "white", "knight");
+        BOARD[1][7] = new Knight(1, 7, "white", "knight");
+        BOARD[6][7] = new Knight(6, 7, "white", "knight");
 
         //Bishops
-        BOARD[7][2] = new Bishop(6, 2, "white", "bishop");
-        BOARD[7][5] = new Bishop(6, 5, "white", "bishop");
+        BOARD[2][7] = new Bishop(2, 7, "white", "bishop");
+        BOARD[5][7] = new Bishop(5, 7, "white", "bishop");
 
         //King
-        BOARD[7][4] = whiteKing = new King(6, 4, "white", "king");
+        BOARD[4][7] = whiteKing = new King(4, 7, "white", "king");
 
         //Queen
-        BOARD[7][3] = new Queen(6, 5, "white", "queen");
+        BOARD[3][7] = new Queen(3, 7, "white", "queen");
 
         //add the rest of the pieces to the list of alive pieces
-        for (Piece piece : BOARD[7]) {
-            whitePieces.add(piece);
+        for (int i = 0; i < 8; ++i) {
+            whitePieces.add(BOARD[i][7]);
         }
     }
 
@@ -453,34 +460,34 @@ public class Board {
      * Populate the board with the initial white pieces in their initial locations
      */
     private void blackPopulate() {
-        int x = 1;
-        int y;
+        int x;
+        int y = 1;
         //Pawns
-        for (y = 0; y < 8; y++) {
+        for (x = 0; x < 8; x++) {
             BOARD[x][y] = new Pawn(x, y, "black", "pawn");
             blackPieces.add(BOARD[x][y]);
         }
         //Rooks
         BOARD[0][0] = new Rook(0, 0, "black", "rook");
-        BOARD[0][7] = new Rook(0, 7, "black", "rook");
+        BOARD[7][0] = new Rook(7, 0, "black", "rook");
 
         //Knights
-        BOARD[0][1] = new Knight(0, 1, "black", "knight");
-        BOARD[0][6] = new Knight(0, 6, "black", "knight");
+        BOARD[1][0] = new Knight(1, 0, "black", "knight");
+        BOARD[6][0] = new Knight(6, 0, "black", "knight");
 
         //Bishops
-        BOARD[0][2] = new Bishop(0, 2, "black", "bishop");
-        BOARD[0][5] = new Bishop(0, 5, "black", "bishop");
+        BOARD[2][0] = new Bishop(2, 0, "black", "bishop");
+        BOARD[5][0] = new Bishop(5, 0, "black", "bishop");
 
         //King
-        BOARD[0][3] = blackKing = new King(0, 3, "black", "king");
+        BOARD[4][0] = blackKing = new King(4, 0, "black", "king");
 
         //Queen
-        BOARD[0][4] = new Queen(0, 4, "black", "queen");
+        BOARD[3][0] = new Queen(3, 0, "black", "queen");
 
         //add the rest of the pieces to the list of alive pieces
-        for (Piece piece : BOARD[0]) {
-            blackPieces.add(piece);
+        for (int i = 0; i < 8; ++i) {
+            blackPieces.add(BOARD[i][0]);
         }
     }
 
@@ -491,8 +498,8 @@ public class Board {
 
         String type;
 
-        for (int x = 0; x < BOARD.length; x++) {
-            for (int y = 0; y < BOARD.length; y++) {
+        for (int y = 0; y < BOARD.length; y++) {
+            for (int x = 0; x < BOARD.length; x++) {
                 if (BOARD[x][y] != null) {
                     type = BOARD[x][y].getType();
                     switch (type) {
@@ -541,7 +548,7 @@ public class Board {
 
                     }
                 } else {
-                    System.out.print(" |NN| ");
+                    System.out.print(" |  | ");
                 }
             }
             System.out.println();
