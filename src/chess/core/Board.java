@@ -373,6 +373,14 @@ public class Board {
     public boolean isOptionalDraw() {
         return isDrawByMoveCount() || isDrawByRepetition();
     }
+    
+    /**
+     * Checks if it is currently white's turn;
+     * @return true if it is white's turn and false otherwise
+     */
+    public boolean isWhiteTurn() {
+        return isWhiteTurn;
+    }
 
     private String getState() {
         StringBuilder builder = new StringBuilder();

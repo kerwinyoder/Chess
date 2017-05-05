@@ -314,4 +314,13 @@ public abstract class Piece {
         Piece destPiece = board.getPiece(targetXPos, targetYPos);
         return destPiece != null && !destPiece.getColor().equalsIgnoreCase(COLOR);
     }
+    
+    /**
+     * Checks if it is this piece's turn
+     * @param board the board on which the piece is located
+     * @return true if it is this piece's turn
+     */
+    protected boolean isTurn(Board board) {
+        return (board.isWhiteTurn() && COLOR.equalsIgnoreCase("white")) || !board.isWhiteTurn() && COLOR.equalsIgnoreCase("black");
+    }
 }

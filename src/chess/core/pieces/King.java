@@ -30,7 +30,14 @@ public class King extends Piece {
     public boolean isValidMove(Board board, int targetXPos, int targetYPos) {
         int deltaX = Math.abs(targetXPos - xPos);
         int deltaY = Math.abs(targetYPos - yPos);
-        if (!isInBounds(targetXPos, targetYPos) || isOccupiedByFriend(board, targetXPos, targetYPos)) {
+        /*isTurn is a hack that is used so isValidMove returns true when it is 
+        being used by isThreatened to see if the king is in check. When it is 
+        not the piece's turn, isValidMove is being used to see if the piece 
+        could attack the target position on its next turn This makes the 
+        assumption that any friendly pieces in that location will no longer be 
+        there on the next move (i.e. an enemy piece is capturing the piece at 
+        the target destination.*/
+        if (!isInBounds(targetXPos, targetYPos) || (isOccupiedByFriend(board, targetXPos, targetYPos) && isTurn(board))) {
             return false;
         }
         switch (deltaX) {

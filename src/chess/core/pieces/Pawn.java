@@ -33,8 +33,7 @@ public class Pawn extends Piece {
         switch (deltaX) {
             case 0: //moving straight forward
                 switch (deltaY) {
-                    case 1: //moving 1 block forward
-                        //ToDo: Add logic for promotion                        
+                    case 1: //moving 1 block forward                      
                         return !isOccupied(board, targetXPos, targetYPos);
                     case 2: //moving 2 blocks forward
                         return !hasMoved() && !isBlockedVertically(board, targetYPos) && !isOccupied(board, targetXPos, targetYPos);
@@ -43,7 +42,7 @@ public class Pawn extends Piece {
                 }
             case 1: //moving to the side one square to capture a piece
                 if (deltaY == 1) {
-                    return isOccupiedByFoe(board, targetXPos, targetYPos) || isEnPassant(board, targetXPos, targetYPos);
+                    return isOccupiedByFoe(board, targetXPos, targetYPos) || isEnPassant(board, targetXPos, targetYPos) || (!isTurn(board) && isOccupiedByFriend(board, targetXPos, targetYPos));
                 } else {
                     return false;
                 }
