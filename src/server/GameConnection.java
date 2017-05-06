@@ -92,7 +92,6 @@ public class GameConnection implements Runnable {
         try {
             p1Out.writeUnshared(p1M);
             p1Out.flush();
-            System.out.println("Made it!");
         } catch (IOException ioe) {
             Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
         }
@@ -100,7 +99,6 @@ public class GameConnection implements Runnable {
         try {
             p2Out.writeUnshared(p2M);
             p2Out.flush();
-            System.out.println("Made it!");
         } catch (IOException ioe) {
             Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
         }
@@ -108,7 +106,6 @@ public class GameConnection implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Game started!");
         boolean temp1 = !g.isCheckMate();
         boolean temp2 = !g.isMandatoryDraw();
 
@@ -183,6 +180,23 @@ public class GameConnection implements Runnable {
                     }
                 }
             }
+        }
+
+        MoveMessage end1 = new MoveMessage("end", null);
+        MoveMessage end2 = new MoveMessage("end", null);
+
+        try {
+            p1Out.writeUnshared(end1);
+            p1Out.flush();
+        } catch (IOException ioe) {
+            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+        }
+
+        try {
+            p2Out.writeUnshared(end2);
+            p2Out.flush();
+        } catch (IOException ioe) {
+            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
         }
 
         returnSockets();
