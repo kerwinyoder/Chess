@@ -14,6 +14,7 @@ import java.io.IOException;
  */
 public class ClientMain {
 
+    //Run a new, independent client
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Client c = new Client();
         c.run();

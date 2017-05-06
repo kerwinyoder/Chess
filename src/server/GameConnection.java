@@ -110,6 +110,7 @@ public class GameConnection implements Runnable {
         boolean temp1 = !g.isCheckMate();
         boolean temp2 = !g.isMandatoryDraw();
 
+        long startTime = System.nanoTime();
         while (temp1 && temp2) {
 
             Object[] moveCommand = null;
@@ -155,9 +156,11 @@ public class GameConnection implements Runnable {
                     }
                 } else {
                     //Update players
+                    long timeTaken = System.nanoTime() - startTime;
                     try {
                         MoveMessage mm = new MoveMessage("board", null);
                         mm.isValid();
+                        mm.setTime(timeTaken);
                         mm.setMove(move);
                         p1Out = new ObjectOutputStream(player1.getOutputStream());
                         p1Out.writeObject(mm);
@@ -168,6 +171,7 @@ public class GameConnection implements Runnable {
                     try {
                         MoveMessage mm = new MoveMessage("board", null);
                         mm.isValid();
+                        mm.setTime(timeTaken);
                         mm.setMove(move);
                         p2Out = new ObjectOutputStream(player2.getOutputStream());
                         p2Out.writeObject(mm);

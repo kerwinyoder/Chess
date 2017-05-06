@@ -15,6 +15,7 @@ public class MoveMessage extends Message implements Serializable {
 
     private Integer[] move;
     private boolean valid = false;
+    private long timeTaken;
 
     public MoveMessage(String h, Object b) {
         super(h, b);
@@ -34,6 +35,14 @@ public class MoveMessage extends Message implements Serializable {
 
     public boolean getValid() {
         return valid;
+    }
+
+    public void setTime(long t) {
+        timeTaken = t;
+    }
+
+    public long getTime() {
+        return timeTaken;
     }
 
 }

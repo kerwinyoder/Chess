@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -38,6 +39,8 @@ public class GameGUI extends javax.swing.JFrame {
     private int[] moveFrom;
     private int[] moveTo;
     private int timesClicked;
+    private long myTime;
+    private long opponentTime;
 
     private ActionListener buttons;
     private static Client client;
@@ -60,6 +63,8 @@ public class GameGUI extends javax.swing.JFrame {
         pieces = game.getBoard();
         color = null;
         timesClicked = 0;
+        myTime = 0;
+        opponentTime = 0;
         moveFrom = null;
         moveTo = null;
         cells = new JButton[8][8];
@@ -337,16 +342,28 @@ public class GameGUI extends javax.swing.JFrame {
             pieces[move[1]][move[0]] = null;
             myTurn = !myTurn;
         } else {
+            jTextField1.setForeground(Color.RED);
             jTextField1.setText("Invalid Move!");
         }
         drawPieces();
         repaint();
     }
 
-    public void getTurn() {
+    public void getTurn(MoveMessage m) {
+        long time = m.getTime();
         if (myTurn) {
+            if (!m.getValid()) {
+                jTextField1.setForeground(Color.RED);
+                jTextField1.setText("Invalid Move!");
+            }
+            opponentTime += time;
+            jLabel5.setText(parseTime(1));
+            jTextField1.setForeground(Color.BLUE);
             jTextField1.setText("Your turn!");
         } else {
+            myTime += time;
+            jLabel3.setText(parseTime(0));
+            jTextField1.setForeground(Color.BLUE);
             jTextField1.setText("Opponent's turn!");
         }
     }
@@ -387,6 +404,30 @@ public class GameGUI extends javax.swing.JFrame {
         }
         timesClicked = 0;
         return click;
+    }
+
+    private String parseTime(int p) {
+        String t = "";
+        StringBuilder sb = new StringBuilder();
+        switch (p) {
+            case 0:
+                sb.append(TimeUnit.HOURS.convert(myTime, TimeUnit.NANOSECONDS));
+                sb.append(":");
+                sb.append(TimeUnit.MINUTES.convert(myTime, TimeUnit.NANOSECONDS));
+                sb.append(":");
+                sb.append(TimeUnit.SECONDS.convert(myTime, TimeUnit.NANOSECONDS));
+                t = sb.toString();
+                break;
+            case 1:
+                sb.append(TimeUnit.HOURS.convert(opponentTime, TimeUnit.NANOSECONDS));
+                sb.append(":");
+                sb.append(TimeUnit.MINUTES.convert(opponentTime, TimeUnit.NANOSECONDS));
+                sb.append(":");
+                sb.append(TimeUnit.SECONDS.convert(opponentTime, TimeUnit.NANOSECONDS));
+                t = sb.toString();
+                break;
+        }
+        return t;
     }
 
     private String getPieceCode(Piece p) {

@@ -6,6 +6,7 @@
 package server;
 
 import communication.Message;
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -34,6 +35,11 @@ public class Server {
     private volatile LinkedList<Socket> addresses;
     private ServerSocket listener;
 
+    /**
+     * Create a new server that listens for clients
+     *
+     * @throws IOException
+     */
     public Server() throws IOException {
         portNum = 5000;
         listener = new ServerSocket(portNum);
@@ -82,9 +88,9 @@ public class Server {
             LinkedList<String> ips = new LinkedList();
             Message m = new Message("list", null);
             for (int i = 0; i < addresses.size(); i++) {
-//                if (!s.getInetAddress().equals(addresses.get(i).getInetAddress())) {
-                ips.add(addresses.get(i).getInetAddress().toString());
-//                }
+                if (!s.getInetAddress().equals(addresses.get(i).getInetAddress())) {
+                    ips.add(addresses.get(i).getInetAddress().toString());
+                }
             }
             m.setBody(ips);
             out.writeObject(m);
@@ -111,16 +117,17 @@ public class Server {
                 in = new ObjectInputStream(s.getInputStream());
                 Object o = in.readObject();
                 m = (Message) o;
-            } catch (SocketTimeoutException ste) {
-                //Socket read times out
-            } catch (IOException ioe) {
-                //Did not read an object
+            } catch (SocketTimeoutException ex) {
+                //Break and continue reading sockets
+            } catch (IOException ex) {
+                Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
             if (m != null) {
                 switch (m.getHeader()) {
                     case "request":
                         ObjectInputStream sIn = null;
 
+                        //One client is sending a request to another
                         if (!m.getRequestSeen()) {
                             Socket sendTo = findSocket(m.getRequestedIP());
                             try {
@@ -135,6 +142,7 @@ public class Server {
                             Socket sender = findSocket(m.getSendingIP());
                             Socket receiver = findSocket(m.getRequestedIP());
 
+                            //Remove clients from list to keep new requests from being made to them
                             addresses.remove(sender);
                             addresses.remove(receiver);
 
@@ -149,25 +157,17 @@ public class Server {
                                 outSender.writeObject(gameStart);
                                 outReceiver.writeObject(gameStart);
                                 outSender.flush();
-//                                outSender.reset();
                                 outReceiver.flush();
-//                                outSender.reset();
                             } catch (IOException ioe) {
-                                //Whoops
                                 System.out.println("Could not send to either of the clients");
+                                System.out.println("Error: " + ioe.getMessage());
                             }
 
-//                            try {
-//                                sender.setSoTimeout(0);
-//                                sIn = new ObjectInputStream(sender.getInputStream());
-//                                sender.setSoTimeout(500);
-//                            } catch (IOException ioe) {
-//                                Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
-//                            }
                             //Remove the two sockets from the list to keep them from showing up in the list
                             GameConnection gc = new GameConnection(sender, receiver, this);
                             threadPool.execute(gc);
-                        } else {
+
+                        } else {//Client request was declined. Report this to the sender.
                             Socket sender = findSocket(m.getSendingIP());
                             try {
                                 ObjectOutputStream rOut = new ObjectOutputStream(sender.getOutputStream());
@@ -201,7 +201,7 @@ public class Server {
             } catch (IOException ioe) {
                 reachable = false;
             }
-            if (!reachable) {
+            if (!reachable) {//The socket is unreachable, so remove it from the client list
                 try {
                     s.close();
                 } catch (IOException ioe) {
@@ -217,7 +217,7 @@ public class Server {
      * Given a string representation of an IP address, find the socket.
      *
      * @param ip String representation of an IP address
-     * @return
+     * @return The socket if it was found
      */
     private Socket findSocket(String ip) {
         Socket temp = null;
@@ -229,7 +229,6 @@ public class Server {
                 return temp;
             }
         }
-        //Why U no return temp?
         return temp;
     }
 
