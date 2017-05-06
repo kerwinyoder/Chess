@@ -85,7 +85,9 @@ public class GameConnection implements Runnable {
         }
 
         p1M.setColor(p1Color);
+        p1M.isValid();
         p2M.setColor(p2Color);
+        p2M.isValid();
 
         try {
             p1Out.writeUnshared(p1M);

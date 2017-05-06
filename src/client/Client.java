@@ -88,9 +88,6 @@ public class Client {
                     case "board":
                         MoveMessage mm = (MoveMessage) om;
                         if (game != null) {
-                            if (!m.getColor().equals("") && !game.colorSet()) {
-                                game.setColor(m.getColor());
-                            }
                             game.updateBoard(mm);
                             game.getTurn(mm);
                         }
@@ -100,6 +97,9 @@ public class Client {
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
                         gui.setVisible(false);
+                        break;
+                    case "end":
+                        gui.setVisible(true);
                         break;
                     case "list"://Server is distributing the client list
                         LinkedList<String> players = (LinkedList) m.getBody();
