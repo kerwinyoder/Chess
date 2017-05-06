@@ -3,23 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package communication;
+
+import java.io.Serializable;
 
 /**
  *
  * @author WAMPUS
  */
-public class MoveMessage {
-    
-    private int[] move;
-    
-    public MoveMessage(int[] move){
+public class MoveMessage implements Serializable {
+
+    private Integer[] move;
+
+    public MoveMessage(Integer[] move) {
         this.move = move;
     }
-    
-    public int[] getMove(){
+
+    public Integer[] getMove() {
         return move;
     }
-    
+
 }

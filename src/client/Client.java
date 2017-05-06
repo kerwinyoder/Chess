@@ -12,6 +12,7 @@ import client.gui.RejectedGUI;
 import client.gui.RequestGUI;
 import communication.Message;
 import communication.MoveMessage;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -56,13 +57,15 @@ public class Client {
             close();
         }
 
+        socket.setTcpNoDelay(true);
+
         //Set the lobby client to be visible to the user
         gui = new LobbyGUI(this);
         gui.setVisible(true);
 
         GameGUI game = null;
 
-        out = new ObjectOutputStream(socket.getOutputStream());
+        out = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
         out.flush();
 
         while (true) {
@@ -93,8 +96,6 @@ public class Client {
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
                         gui.setVisible(false);
-                        out.writeObject(1);
-                        out.flush();
                         break;
                     case "list"://Server is distributing the client list
                         LinkedList<String> players = (LinkedList) m.getBody();
@@ -121,9 +122,10 @@ public class Client {
         }
     }
 
-    public void sendMove(MoveMessage m) {
+    public void sendMove(Message m) {
         try {
-            out.writeObject(m);
+            out.reset();
+            out.writeUnshared(m);
             out.flush();
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

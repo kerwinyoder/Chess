@@ -18,6 +18,8 @@ import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -57,7 +59,7 @@ public class Server {
             try {
                 client = listener.accept();
             } catch (SocketTimeoutException ste) {
-//                checkDisconnects();
+                checkDisconnects();
             }
             if (client != null) {
                 if (!addresses.contains(client)) {
@@ -117,6 +119,8 @@ public class Server {
             if (m != null) {
                 switch (m.getHeader()) {
                     case "request":
+                        ObjectInputStream sIn = null;
+
                         if (!m.getRequestSeen()) {
                             Socket sendTo = findSocket(m.getRequestedIP());
                             try {
@@ -130,13 +134,6 @@ public class Server {
                         if (m.requestAccepted()) {
                             Socket sender = findSocket(m.getSendingIP());
                             Socket receiver = findSocket(m.getRequestedIP());
-
-                            ObjectInputStream sIn = null;
-                            try {
-                                sIn = new ObjectInputStream(sender.getInputStream());
-                            } catch (IOException ioe) {
-
-                            }
 
                             addresses.remove(sender);
                             addresses.remove(receiver);
@@ -160,8 +157,15 @@ public class Server {
                                 System.out.println("Could not send to either of the clients");
                             }
 
+//                            try {
+//                                sender.setSoTimeout(0);
+//                                sIn = new ObjectInputStream(sender.getInputStream());
+//                                sender.setSoTimeout(500);
+//                            } catch (IOException ioe) {
+//                                Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+//                            }
                             //Remove the two sockets from the list to keep them from showing up in the list
-                            GameConnection gc = new GameConnection(sender, sIn, receiver, in, this);
+                            GameConnection gc = new GameConnection(sender, receiver, this);
                             threadPool.execute(gc);
                         } else {
                             Socket sender = findSocket(m.getSendingIP());

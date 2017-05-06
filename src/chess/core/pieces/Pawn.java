@@ -33,7 +33,7 @@ public class Pawn extends Piece {
         switch (deltaX) {
             case 0: //moving straight forward
                 switch (deltaY) {
-                    case 1: //moving 1 block forward                      
+                    case 1: //moving 1 block forward
                         return !isOccupied(board, targetXPos, targetYPos);
                     case 2: //moving 2 blocks forward
                         return !hasMoved() && !isBlockedVertically(board, targetYPos) && !isOccupied(board, targetXPos, targetYPos);
@@ -90,10 +90,17 @@ public class Pawn extends Piece {
 
     @Override
     public boolean hasValidMoves(Board board) {
-        return isValidMove(board, xPos, yPos + 1)
-                || isValidMove(board, xPos, yPos + 2)
-                || isValidMove(board, xPos - 1, yPos + 1)
-                || isValidMove(board, xPos + 1, yPos + 1);
+        if (COLOR.equals("black")) {
+            return isValidMove(board, xPos, yPos + 1)
+                    || isValidMove(board, xPos, yPos + 2)
+                    || isValidMove(board, xPos - 1, yPos + 1)
+                    || isValidMove(board, xPos + 1, yPos + 1);
+        } else {
+            return isValidMove(board, xPos, yPos - 1)
+                    || isValidMove(board, xPos, yPos - 2)
+                    || isValidMove(board, xPos - 1, yPos - 1)
+                    || isValidMove(board, xPos + 1, yPos - 1);
+        }
     }
 
 }

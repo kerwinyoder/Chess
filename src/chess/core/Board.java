@@ -94,7 +94,7 @@ public class Board {
                 stateCount.put(state, stateCount.get(state) + 1);
             }
 
-            //if a piece was captured, update the move count and list of alive pieces 
+            //if a piece was captured, update the move count and list of alive pieces
             if (victim != null) {
                 if (victim.getColor().equalsIgnoreCase("white")) {
                     whitePieces.remove(victim);
@@ -278,7 +278,7 @@ public class Board {
         //Check if any pieces (including the king) have valid moves available
         for (Piece piece : list) {
             if (piece.hasValidMoves(this)) {
-                return true;
+                return false;
             }
         }
         //If no pieces can move and the king is not in check, the game is a draw by stalemate.
@@ -359,6 +359,8 @@ public class Board {
      * @return true if the game is a mandatory draw
      */
     public boolean isMandatoryDraw() {
+        boolean temp1 = isDrawByStalemate();
+        boolean temp2 = isDrawByInsufficientMaterial();
         return isDrawByStalemate() || isDrawByInsufficientMaterial();
     }
 
@@ -373,13 +375,36 @@ public class Board {
     public boolean isOptionalDraw() {
         return isDrawByMoveCount() || isDrawByRepetition();
     }
-    
+
     /**
      * Checks if it is currently white's turn;
+     *
      * @return true if it is white's turn and false otherwise
      */
     public boolean isWhiteTurn() {
         return isWhiteTurn;
+    }
+
+    /**
+     * Checks if the king whose turn it is is in check.
+     *
+     * @return True if the king check
+     */
+    public boolean isInCheck() {
+        return inCheck;
+    }
+
+    /**
+     * Checks if the game has ended with a checkmate
+     *
+     * @return true if the game is over
+     */
+    public boolean isCheckMate() {
+        if (isWhiteTurn) {
+            return whiteKing.isCheckmated(this);
+        } else {
+            return blackKing.isCheckmated(this);
+        }
     }
 
     private String getState() {
@@ -418,9 +443,10 @@ public class Board {
         }
         return builder.toString();
     }
-    
+
     /**
      * Gets the game board array
+     *
      * @return the game board array
      */
     public Piece[][] getBoard() {

@@ -152,9 +152,9 @@ public class GameGUI extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         if (moveFrom != null && moveTo != null) {
-            int[] move = {moveFrom[0], moveFrom[1], moveTo[0], moveTo[0]};
+            Integer[] move = {moveFrom[0], moveFrom[1], moveTo[0], moveTo[1]};
             MoveMessage m = new MoveMessage(move);
-            client.sendMove(m);
+//            client.sendMove(m);
             unHighlight();
             moveFrom = null;
             moveTo = null;
