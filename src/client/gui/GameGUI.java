@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
@@ -381,7 +382,7 @@ public class GameGUI extends javax.swing.JFrame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 JButton b = cells[i][j];
-                b.setBorder(null);
+                b.setBorder(UIManager.getBorder("Button.border"));
             }
         }
         timesClicked = 0;
