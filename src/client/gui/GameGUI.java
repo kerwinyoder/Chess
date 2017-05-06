@@ -17,7 +17,11 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.border.LineBorder;
 
@@ -153,8 +157,17 @@ public class GameGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (moveFrom != null && moveTo != null) {
             Integer[] move = {moveFrom[0], moveFrom[1], moveTo[0], moveTo[1]};
-            MoveMessage m = new MoveMessage(move);
-//            client.sendMove(m);
+            MoveMessage m = new MoveMessage("move", null);
+            m.setMove(move);
+
+            try {
+                ObjectOutputStream output = new ObjectOutputStream(client.socket.getOutputStream());
+                output.writeObject(m);
+                output.flush();
+            } catch (IOException ex) {
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             unHighlight();
             moveFrom = null;
             moveTo = null;
@@ -242,16 +255,17 @@ public class GameGUI extends javax.swing.JFrame {
         }
     }
 
-    public void updateBoard(Piece[][] p) {
-        if ((!Arrays.deepEquals(pieces, p) && !myTurn) || (!Arrays.deepEquals(pieces, p) && myTurn)) {
-//                pieces = p;
+    public void updateBoard(MoveMessage m) {
+        Integer[] move = m.getMove();
+        if (m.getValid()) {
+            pieces[move[2]][move[3]] = pieces[move[0]][move[1]];
             myTurn = !myTurn;
             if (myTurn) {
                 jTextField1.setText("Your turn!");
             } else {
                 jTextField1.setText("Opponent's turn!");
             }
-        } else if (Arrays.deepEquals(pieces, p) && myTurn) {
+        } else {
             jTextField1.setText("Invalid Move!");
         }
         drawPieces();

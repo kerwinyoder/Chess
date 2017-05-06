@@ -11,16 +11,29 @@ import java.io.Serializable;
  *
  * @author WAMPUS
  */
-public class MoveMessage implements Serializable {
+public class MoveMessage extends Message implements Serializable {
 
     private Integer[] move;
+    private boolean valid = false;
 
-    public MoveMessage(Integer[] move) {
-        this.move = move;
+    public MoveMessage(String h, Object b) {
+        super(h, b);
+    }
+
+    public void setMove(Integer[] i) {
+        move = i;
     }
 
     public Integer[] getMove() {
         return move;
+    }
+
+    public void isValid() {
+        valid = true;
+    }
+
+    public boolean getValid() {
+        return valid;
     }
 
 }

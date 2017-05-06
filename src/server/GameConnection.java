@@ -6,6 +6,7 @@
 package server;
 
 import chess.core.Board;
+import chess.core.Move;
 import communication.Message;
 import communication.MoveMessage;
 import java.io.IOException;
@@ -111,42 +112,69 @@ public class GameConnection implements Runnable {
 
         while (temp1 && temp2) {
 
+            Object[] moveCommand = null;
             try {
-                processMoves();
+                moveCommand = processMoves();
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-//            try {
-//                p1In = new ObjectInputStream(player1.getInputStream());
-//            } catch (IOException ex) {
-//                Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//
-//            try {
-//                p2In = new ObjectInputStream(player2.getInputStream());
-//            } catch (IOException ex) {
-//                Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-            Message move = null;
+            Socket s = (Socket) moveCommand[0];
+            Integer[] move = (Integer[]) moveCommand[1];
+            Move m = new Move(move[0], move[1], move[2], move[3]);
 
-            if (g.isWhiteTurn()) {
-                boolean received = false;
-                if (p1Color.equals("white")) {
-
-                } else {
-
+            boolean isValid = g.move(m);
+            if (!isValid) {
+//                sendError();
+                int p = findPlayer(s);
+                switch (p) {
+                    case 1:
+                        try {
+                            MoveMessage mm = new MoveMessage("board", null);
+                            mm.setMove(move);
+                            p1Out = new ObjectOutputStream(player1.getOutputStream());
+                            p1Out.writeObject(mm);
+                            p1Out.flush();
+                        } catch (IOException ioe) {
+                            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                        }
+                        break;
+                    case 2:
+                        try {
+                            MoveMessage mm = new MoveMessage("board", null);
+                            mm.setMove(move);
+                            p2Out = new ObjectOutputStream(player2.getOutputStream());
+                            p2Out.writeObject(mm);
+                            p2Out.flush();
+                        } catch (IOException ioe) {
+                            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             } else {
-                boolean received = false;
-                if (p1Color.equals("black")) {
-
-                } else {
-
+                //Update players
+                try {
+                    MoveMessage mm = new MoveMessage("board", null);
+                    mm.isValid();
+                    mm.setMove(move);
+                    p1Out = new ObjectOutputStream(player1.getOutputStream());
+                    p1Out.writeObject(mm);
+                    p1Out.flush();
+                } catch (IOException ioe) {
+                    Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
                 }
-            }
-            if (move != null) {
-                System.out.println(move.getBody().toString());
+                try {
+                    MoveMessage mm = new MoveMessage("board", null);
+                    mm.isValid();
+                    mm.setMove(move);
+                    p2Out = new ObjectOutputStream(player2.getOutputStream());
+                    p2Out.writeObject(mm);
+                    p2Out.flush();
+                } catch (IOException ioe) {
+                    Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                }
             }
         }
 
@@ -158,7 +186,7 @@ public class GameConnection implements Runnable {
         server.returnSocket(player2);
     }
 
-    private void processMoves() throws ClassNotFoundException {
+    private Object[] processMoves() throws ClassNotFoundException {
         for (Socket s : players) {
             ObjectInputStream in = null;
             MoveMessage m = null;
@@ -177,8 +205,18 @@ public class GameConnection implements Runnable {
                 //Did not read an object
             }
             if (m != null) {
-                System.out.println(Arrays.toString(m.getMove()));
+                return new Object[]{s, m.getMove()};
             }
         }
+        return null;
+    }
+
+    private int findPlayer(Socket s) {
+        for (int i = 0; i < players.length; i++) {
+            if (s.equals(players[i])) {
+                return i + 1;
+            }
+        }
+        return -1;
     }
 }

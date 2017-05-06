@@ -84,11 +84,12 @@ public class Client {
                 }
                 switch (m.getHeader()) {
                     case "board":
+                        MoveMessage mm = (MoveMessage) m;
                         if (game != null) {
                             if (!m.getColor().equals("") && !game.colorSet()) {
                                 game.setColor(m.getColor());
                             }
-                            game.updateBoard((Piece[][]) m.getBody());
+                            game.updateBoard(mm);
                         }
                         break;
                     case "game":
