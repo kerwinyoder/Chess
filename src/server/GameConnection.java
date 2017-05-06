@@ -72,8 +72,8 @@ public class GameConnection implements Runnable {
         rand = new Random();
         g = new Board();
 
-        Message p1M = new Message("board", null);
-        Message p2M = new Message("board", null);
+        MoveMessage p1M = new MoveMessage("board", null);
+        MoveMessage p2M = new MoveMessage("board", null);
 
         int coinToss = rand.nextInt(2);
         if (coinToss == 1) {
