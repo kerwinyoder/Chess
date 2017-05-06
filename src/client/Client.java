@@ -90,8 +90,10 @@ public class Client {
                         if (game != null) {
                             if (!m.getColor().equals("") && !game.colorSet()) {
                                 game.setColor(m.getColor());
+                            } else {
+                                game.updateBoard(mm);
                             }
-                            game.updateBoard(mm);
+                            game.getTurn();
                         }
                         break;
                     case "game":

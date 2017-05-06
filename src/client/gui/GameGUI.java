@@ -34,6 +34,7 @@ public class GameGUI extends javax.swing.JFrame {
     private boolean myTurn = false;
     private int[] moveFrom;
     private int[] moveTo;
+    private int timesClicked;
 
     private ActionListener buttons;
     private static Client client;
@@ -55,6 +56,7 @@ public class GameGUI extends javax.swing.JFrame {
         game = new Board();
         pieces = game.getBoard();
         color = null;
+        timesClicked = 0;
         moveFrom = null;
         moveTo = null;
         cells = new JButton[8][8];
@@ -81,6 +83,7 @@ public class GameGUI extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -115,6 +118,13 @@ public class GameGUI extends javax.swing.JFrame {
         jTextPane1.setText("Welcome to the game!\n\nWhen it is your turn, click a square containing a piece to choose which one you want to move. After that, click a square that you want to move the piece to.\n\nYou can submit your move by clicking the \"Submit Move\" button above this pane. Keep an eye on the message box above the submit button. It will let you know when it is your turn and when you have tried an invalid move.\n\nHappy playing!");
         jScrollPane1.setViewportView(jTextPane1);
 
+        jButton2.setText("Cancel Move");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -126,23 +136,24 @@ public class GameGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
                     .addComponent(jTextField1)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1)))
+                        .addGap(4, 4, 4)
+                        .addComponent(jButton2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -173,6 +184,13 @@ public class GameGUI extends javax.swing.JFrame {
             moveTo = null;
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        moveFrom = null;
+        moveTo = null;
+        unHighlight();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -242,11 +260,15 @@ public class GameGUI extends javax.swing.JFrame {
                 b.setFont(new Font("Dialog", Font.PLAIN, 40));
                 b.addActionListener((ActionEvent ae) -> {
                     if (myTurn) {
-                        int[] click = getButton((JButton) ae.getSource());
-                        if (moveFrom == null) {
-                            moveFrom = click;
-                        } else if (moveFrom != null && moveTo == null) {
-                            moveTo = click;
+                        if (timesClicked < 2) {
+                            int[] click = getButton((JButton) ae.getSource());
+                            if (moveFrom == null) {
+                                moveFrom = click;
+                                timesClicked++;
+                            } else if (moveFrom != null && moveTo == null) {
+                                moveTo = click;
+                                timesClicked++;
+                            }
                         }
                     }
                 });
@@ -263,16 +285,19 @@ public class GameGUI extends javax.swing.JFrame {
             pieces[move[3]][move[2]] = pieces[move[1]][move[0]];
             pieces[move[1]][move[0]] = null;
             myTurn = !myTurn;
-            if (myTurn) {
-                jTextField1.setText("Your turn!");
-            } else {
-                jTextField1.setText("Opponent's turn!");
-            }
         } else {
             jTextField1.setText("Invalid Move!");
         }
         drawPieces();
         repaint();
+    }
+
+    public void getTurn() {
+        if (myTurn) {
+            jTextField1.setText("Your turn!");
+        } else {
+            jTextField1.setText("Opponent's turn!");
+        }
     }
 
     public void setColor(String c) {
@@ -308,6 +333,7 @@ public class GameGUI extends javax.swing.JFrame {
                 b.setBorder(null);
             }
         }
+        timesClicked = 0;
         return click;
     }
 
@@ -371,6 +397,7 @@ public class GameGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
