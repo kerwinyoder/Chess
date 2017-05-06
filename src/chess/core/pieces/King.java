@@ -1,6 +1,7 @@
 package chess.core.pieces;
 
 import chess.core.Board;
+import chess.core.Move;
 
 /**
  * A King piece
@@ -30,21 +31,20 @@ public class King extends Piece {
     public boolean isValidMove(Board board, int targetXPos, int targetYPos) {
         int deltaX = Math.abs(targetXPos - xPos);
         int deltaY = Math.abs(targetYPos - yPos);
-        /*isTurn is a hack that is used so isValidMove returns true when it is 
-        being used by isThreatened to see if the king is in check. When it is 
-        not the piece's turn, isValidMove is being used to see if the piece 
-        could attack the target position on its next turn This makes the 
-        assumption that any friendly pieces in that location will no longer be 
-        there on the next move (i.e. an enemy piece is capturing the piece at 
-        the target destination.*/
-        if (!isInBounds(targetXPos, targetYPos) || (isOccupiedByFriend(board, targetXPos, targetYPos) && isTurn(board))) {
+        if (!isInBounds(targetXPos, targetYPos) || isOccupiedByFriend(board, targetXPos, targetYPos)) {
             return false;
         }
         switch (deltaX) {
             case 0:
             case 1:
-                if ((deltaY == 0 || deltaY == 1) && !board.isThreatened(targetXPos, targetYPos, COLOR)) {
-                    hasMoved = true;
+                /*!isTurn handles the case where a king is capturing a piece that is protected by the opposing king. 
+                Without it, the opposing king's isValidMove() will return false when the attacking king's isMoveIntoCheck() 
+                is called if an enemy can move to the contested square.*/
+                boolean isTurn = isTurn(board);
+                if (((deltaY == 0 || deltaY == 1) && !isMoveIntoCheck(board, new Move(xPos, yPos, targetXPos, targetYPos))) || !isTurn) {
+                    if (isTurn) {
+                        hasMoved = true;
+                    }
                     return true;
                 } else {
                     return false;
@@ -59,17 +59,17 @@ public class King extends Piece {
                 if (targetXPos == 2) {
                     //if the king is in check, will pass through check, or will be in check after moving, he cannot castle
                     for (int i = 4; i >= 2; --i) {
-                        if (board.isThreatened(i, yPos, COLOR)) {
+                        if (isMoveIntoCheck(board, new Move(xPos, yPos, i, yPos))) {
                             return false;
                         }
                     }
                     rook = board.getPiece(0, yPos);
                     return rook != null && rook instanceof Rook && !((Rook) rook).hasMoved() && !isBlockedHorizontally(board, 0);
-                } //king-side castle 
+                } //king-side castle
                 else {
                     //if the king is in check, will pass through check, or will be in check after moving, he cannot castle
                     for (int i = 4; i <= 6; ++i) {
-                        if (board.isThreatened(i, yPos, COLOR)) {
+                        if (isMoveIntoCheck(board, new Move(xPos, yPos, i, yPos))) {
                             return false;
                         }
                     }
@@ -80,6 +80,38 @@ public class King extends Piece {
                 //invalid isValidMove
                 return false;
         }
+    }
+
+    /**
+     * Checks if moving the king to the given location will put him in check.
+     *
+     * @param board the game board
+     * @param targetXPos the column of the target location
+     * @param targetYPos the row of the target location
+     * @return true if the move will put the king in check and false otherwise
+     */
+    public boolean isMoveIntoCheck(Board board, Move move) {
+        boolean isCheck = false;
+        //temporarily move the king to test if the king will be in check at the new location.
+        Piece victim = board.getPiece(move.TARGET_X, move.TARGET_Y);
+        if (victim != null) {
+            board.removePiece(victim);
+        }
+        board.setPiece(null, xPos, yPos);
+        xPos = move.TARGET_X;
+        yPos = move.TARGET_Y;
+        board.setPiece(this, move.TARGET_X, move.TARGET_Y);
+        isCheck = isInCheck(board);
+
+        //move the pieces back to their original locations
+        board.setPiece(victim, move.TARGET_X, move.TARGET_Y);
+        if (victim != null) {
+            board.addPiece(victim);
+        }
+        board.setPiece(this, move.START_X, move.START_Y);
+        xPos = move.START_X;
+        yPos = move.START_Y;
+        return isCheck;
     }
 
     /**

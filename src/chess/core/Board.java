@@ -170,6 +170,53 @@ public class Board {
         return BOARD[column][row];
     }
 
+    /**
+     * Moves a piece to a specified location without move validation. This
+     * method does not provide move validation. It is intended to use only to
+     * temporarily move a king to simplify testing whether he is in check or not
+     *
+     * @param piece the piece to move to the specified location
+     * @param column the column to which the piece should be moved
+     * @param row the row to which the piece should be moved
+     */
+    public void setPiece(Piece piece, int column, int row) {
+        BOARD[column][row] = piece;
+    }
+
+    /**
+     * Adds the piece to the list of alive pieces of its color
+     *
+     * @param piece the piece to add to the list of alive pieces
+     */
+    public void addPiece(Piece piece) {
+        if (piece == null) {
+            return;
+        }
+        String color = piece.getColor();
+        if (color.equalsIgnoreCase("white")) {
+            whitePieces.add(piece);
+        } else {
+            blackPieces.add(piece);
+        }
+    }
+
+    /**
+     * Removes the piece from the list of alive pieces of its color
+     *
+     * @param piece the piece to remove from the list of alive pieces
+     */
+    public void removePiece(Piece piece) {
+        if (piece == null) {
+            return;
+        }
+        String color = piece.getColor();
+        if (color.equalsIgnoreCase("white")) {
+            whitePieces.remove(piece);
+        } else {
+            blackPieces.remove(piece);
+        }
+    }
+
     /*
      * Checks if the given pawn is being promoted
      * @param pawn the pawn to check for promotion
