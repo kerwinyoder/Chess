@@ -36,6 +36,7 @@ import javax.swing.border.LineBorder;
 public class GameGUI extends javax.swing.JFrame {
 
     private boolean myTurn = false;
+    private boolean firstTurn = true;
     private int[] moveFrom;
     private int[] moveTo;
     private int timesClicked;
@@ -356,8 +357,11 @@ public class GameGUI extends javax.swing.JFrame {
         long time = m.getTime();
         if (myTurn) {
             if (!m.getValid()) {
-                jTextField1.setForeground(Color.RED);
-                jTextField1.setText("Invalid Move!");
+                if (!firstTurn) {
+                    jTextField1.setForeground(Color.RED);
+                    jTextField1.setText("Invalid Move!");
+                }
+                firstTurn = false;
             } else {
                 opponentTime += time;
                 jLabel5.setText(parseTime(1));
@@ -381,6 +385,7 @@ public class GameGUI extends javax.swing.JFrame {
             jTextField1.setForeground(Color.BLUE);
             jTextField1.setText("Your turn!");
         } else {
+            firstTurn = false;
             jTextField1.setForeground(Color.BLUE);
             jTextField1.setText("Opponent's turn!");
         }
@@ -422,29 +427,29 @@ public class GameGUI extends javax.swing.JFrame {
         StringBuilder sb = new StringBuilder();
         switch (p) {
             case 0:
-                String h = "" + TimeUnit.HOURS.convert(myTime, TimeUnit.NANOSECONDS);
+                String h = "" + (TimeUnit.HOURS.convert(myTime, TimeUnit.NANOSECONDS) % 24);
                 h = ((h.length() == 1) ? ("0" + h) : h);
                 sb.append(h);
                 sb.append(":");
-                String m = "" + TimeUnit.MINUTES.convert(myTime, TimeUnit.NANOSECONDS);
+                String m = "" + (TimeUnit.MINUTES.convert(myTime, TimeUnit.NANOSECONDS) % 60);
                 m = ((m.length() == 1) ? ("0" + m) : m);
                 sb.append(m);
                 sb.append(":");
-                String s = "" + TimeUnit.SECONDS.convert(myTime, TimeUnit.NANOSECONDS);
+                String s = "" + (TimeUnit.SECONDS.convert(myTime, TimeUnit.NANOSECONDS) % 60);
                 s = ((s.length() == 1) ? ("0" + s) : s);
                 sb.append(s);
                 t = sb.toString();
                 break;
             case 1:
-                String h2 = "" + TimeUnit.HOURS.convert(opponentTime, TimeUnit.NANOSECONDS);
+                String h2 = "" + (TimeUnit.HOURS.convert(opponentTime, TimeUnit.NANOSECONDS) % 24);
                 h2 = ((h2.length() == 1) ? ("0" + h2) : h2);
                 sb.append(h2);
                 sb.append(":");
-                String m2 = "" + TimeUnit.MINUTES.convert(opponentTime, TimeUnit.NANOSECONDS);
+                String m2 = "" + (TimeUnit.MINUTES.convert(opponentTime, TimeUnit.NANOSECONDS) % 60);
                 m2 = ((m2.length() == 1) ? ("0" + m2) : m2);
                 sb.append(m2);
                 sb.append(":");
-                String s2 = "" + TimeUnit.SECONDS.convert(opponentTime, TimeUnit.NANOSECONDS);
+                String s2 = "" + (TimeUnit.SECONDS.convert(opponentTime, TimeUnit.NANOSECONDS) % 60);
                 s2 = ((s2.length() == 1) ? ("0" + s2) : s2);
                 sb.append(s2);
                 t = sb.toString();
