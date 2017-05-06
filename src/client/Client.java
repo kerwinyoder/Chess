@@ -88,7 +88,9 @@ public class Client {
                     case "board":
                         MoveMessage mm = (MoveMessage) om;
                         if (game != null) {
-                            game.updateBoard(mm);
+                            if (mm.getMove() != null) {
+                                game.updateBoard(mm);
+                            }
                             game.getTurn(mm);
                         }
                         break;
