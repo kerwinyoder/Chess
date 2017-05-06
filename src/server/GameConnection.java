@@ -122,7 +122,7 @@ public class GameConnection implements Runnable {
             if (moveCommand != null) {
                 Socket s = (Socket) moveCommand[0];
                 Integer[] move = (Integer[]) moveCommand[1];
-                Move m = new Move(move[0], move[1], move[2], move[3]);
+                Move m = new Move(move[1], move[0], move[3], move[2]);
 
                 boolean isValid = g.move(m);
                 if (!isValid) {

@@ -220,6 +220,8 @@ public class GameGUI extends javax.swing.JFrame {
                     } else {
                         b.setForeground(Color.WHITE);
                     }
+                } else {
+                    b.setText("");
                 }
             }
         }
@@ -258,7 +260,8 @@ public class GameGUI extends javax.swing.JFrame {
     public void updateBoard(MoveMessage m) {
         Integer[] move = m.getMove();
         if (m.getValid()) {
-            pieces[move[2]][move[3]] = pieces[move[0]][move[1]];
+            pieces[move[3]][move[2]] = pieces[move[1]][move[0]];
+            pieces[move[1]][move[0]] = null;
             myTurn = !myTurn;
             if (myTurn) {
                 jTextField1.setText("Your turn!");
