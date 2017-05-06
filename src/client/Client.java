@@ -5,7 +5,6 @@
  */
 package client;
 
-import chess.core.pieces.Piece;
 import client.gui.GameGUI;
 import client.gui.LobbyGUI;
 import client.gui.RejectedGUI;
@@ -22,8 +21,6 @@ import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -47,6 +44,13 @@ public class Client {
         socket = new Socket();
     }
 
+    /**
+     * Creates a new client.&nbsp;Client can connect to the server, send and
+     * receive requests, and play rounds of chess with other clients.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public void run() throws IOException, ClassNotFoundException {
         System.out.print("Please enter the IP Address of the server: ");
         String ip = kbinput.nextLine();
@@ -85,7 +89,7 @@ public class Client {
                     System.out.println(m.getHeader());
                 }
                 switch (m.getHeader()) {
-                    case "board":
+                    case "board"://Update the board of the game gui
                         MoveMessage mm = (MoveMessage) om;
                         if (game != null) {
                             if (mm.getMove() != null) {
@@ -94,13 +98,13 @@ public class Client {
                             game.getTurn(mm);
                         }
                         break;
-                    case "game":
+                    case "game"://Initialize a game for this client
                         game = new GameGUI(this);
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
                         gui.setVisible(false);
                         break;
-                    case "end":
+                    case "end"://End the game for this client
                         gui.setVisible(true);
                         break;
                     case "list"://Server is distributing the client list
@@ -109,12 +113,12 @@ public class Client {
                             gui.updateList(players);
                         }
                         break;
-                    case "request":
-                        if (m.getRequestSeen() && !m.requestAccepted()) {
+                    case "request"://Receive a request or decline notification
+                        if (m.getRequestSeen() && !m.requestAccepted()) {//Your request was rejected
                             RejectedGUI dg = new RejectedGUI();
                             dg.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                             dg.setVisible(true);
-                        } else {
+                        } else {//You received a request
                             RequestGUI rg = new RequestGUI(this, m);
                             rg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             rg.setVisible(true);
@@ -125,16 +129,6 @@ public class Client {
                 }
             }
 
-        }
-    }
-
-    public void sendMove(Message m) {
-        try {
-            out.reset();
-            out.writeUnshared(m);
-            out.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

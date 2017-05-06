@@ -10,7 +10,6 @@ import communication.Message;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -157,6 +156,12 @@ public class LobbyGUI extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Update the list of connected clients with the new list received from the
+     * server
+     *
+     * @param list The new client list from the server
+     */
     public void updateList(LinkedList<String> list) {
         DefaultListModel model = new DefaultListModel();
         for (String s : list) {

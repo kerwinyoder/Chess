@@ -6,9 +6,7 @@
 package server;
 
 import communication.Message;
-import java.io.Console;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -233,7 +231,7 @@ public class Server {
     }
 
     /**
-     * Used to return sockets from a game thread
+     * Used to return sockets from a game thread.
      *
      * @param s The socket being returned
      */

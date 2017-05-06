@@ -163,6 +163,9 @@ public class RequestGUI extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Load the IP address of the other client into the request message.
+     */
     public void updateRequest() {
         jLabel1.setText(m.getSendingIP() + " would like to play a round of chess");
     }

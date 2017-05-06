@@ -5,7 +5,6 @@
  */
 package client;
 
-import client.gui.GameGUI;
 import java.io.IOException;
 
 /**

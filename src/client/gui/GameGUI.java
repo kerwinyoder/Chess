@@ -19,14 +19,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
-import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 
 /**
@@ -336,6 +334,12 @@ public class GameGUI extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Receive a new move from the server and update the board to show the move
+     * to the client.
+     *
+     * @param m The move received from the server
+     */
     public void updateBoard(MoveMessage m) {
         Integer[] move = m.getMove();
         if (m.getValid()) {
@@ -350,6 +354,11 @@ public class GameGUI extends javax.swing.JFrame {
         repaint();
     }
 
+    /**
+     * Update which player's turn it is in the message box.
+     *
+     * @param m The message containing the new turn information
+     */
     public void getTurn(MoveMessage m) {
         if (color == null) {
             setColor(m.getColor());
@@ -378,6 +387,12 @@ public class GameGUI extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Set the color of the player for piece control and present the color to
+     * the player.
+     *
+     * @param c The color that the player is controlling
+     */
     public void setColor(String c) {
         color = c;
         if (c.equals("white")) {
@@ -392,6 +407,11 @@ public class GameGUI extends javax.swing.JFrame {
         jLabel1.setText("Piece Color: " + color.substring(0, 1).toUpperCase() + color.substring(1));
     }
 
+    /**
+     * Check if the color for the player is set
+     *
+     * @return Whether or not the color has been set
+     */
     public boolean colorSet() {
         return color != null;
     }

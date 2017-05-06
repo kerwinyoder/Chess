@@ -7,16 +7,13 @@ package server;
 
 import chess.core.Board;
 import chess.core.Move;
-import communication.Message;
 import communication.MoveMessage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +37,15 @@ public class GameConnection implements Runnable {
     private Random rand;
     private Socket[] players;
 
+    /**
+     * Create a new game thread for two players to play a round of
+     * chess.&nbsp;Receive input from players and update the board
+     * accordingly.&nbsp;Also update the boards of clients with new moves.
+     *
+     * @param s1 The socket of the first player
+     * @param s2 The socket of the second player
+     * @param server The server hosting the game
+     */
     public GameConnection(Socket s1, Socket s2, Server server) {
 
         this.server = server;
