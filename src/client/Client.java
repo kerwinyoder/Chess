@@ -70,9 +70,11 @@ public class Client {
 
         while (true) {
             Message m = null;
+            Object om = null;
             try {
                 in = new ObjectInputStream(socket.getInputStream());
                 Object rec = in.readObject();
+                om = rec;
                 m = (Message) rec;
             } catch (IOException ioe) {
                 //Nothing was read from the socket
@@ -84,7 +86,7 @@ public class Client {
                 }
                 switch (m.getHeader()) {
                     case "board":
-                        MoveMessage mm = (MoveMessage) m;
+                        MoveMessage mm = (MoveMessage) om;
                         if (game != null) {
                             if (!m.getColor().equals("") && !game.colorSet()) {
                                 game.setColor(m.getColor());

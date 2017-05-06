@@ -119,61 +119,62 @@ public class GameConnection implements Runnable {
                 Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            Socket s = (Socket) moveCommand[0];
-            Integer[] move = (Integer[]) moveCommand[1];
-            Move m = new Move(move[0], move[1], move[2], move[3]);
+            if (moveCommand != null) {
+                Socket s = (Socket) moveCommand[0];
+                Integer[] move = (Integer[]) moveCommand[1];
+                Move m = new Move(move[0], move[1], move[2], move[3]);
 
-            boolean isValid = g.move(m);
-            if (!isValid) {
-//                sendError();
-                int p = findPlayer(s);
-                switch (p) {
-                    case 1:
-                        try {
-                            MoveMessage mm = new MoveMessage("board", null);
-                            mm.setMove(move);
-                            p1Out = new ObjectOutputStream(player1.getOutputStream());
-                            p1Out.writeObject(mm);
-                            p1Out.flush();
-                        } catch (IOException ioe) {
-                            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
-                        }
-                        break;
-                    case 2:
-                        try {
-                            MoveMessage mm = new MoveMessage("board", null);
-                            mm.setMove(move);
-                            p2Out = new ObjectOutputStream(player2.getOutputStream());
-                            p2Out.writeObject(mm);
-                            p2Out.flush();
-                        } catch (IOException ioe) {
-                            Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                //Update players
-                try {
-                    MoveMessage mm = new MoveMessage("board", null);
-                    mm.isValid();
-                    mm.setMove(move);
-                    p1Out = new ObjectOutputStream(player1.getOutputStream());
-                    p1Out.writeObject(mm);
-                    p1Out.flush();
-                } catch (IOException ioe) {
-                    Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
-                }
-                try {
-                    MoveMessage mm = new MoveMessage("board", null);
-                    mm.isValid();
-                    mm.setMove(move);
-                    p2Out = new ObjectOutputStream(player2.getOutputStream());
-                    p2Out.writeObject(mm);
-                    p2Out.flush();
-                } catch (IOException ioe) {
-                    Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                boolean isValid = g.move(m);
+                if (!isValid) {
+                    int p = findPlayer(s);
+                    switch (p) {
+                        case 1:
+                            try {
+                                MoveMessage mm = new MoveMessage("board", null);
+                                mm.setMove(move);
+                                p1Out = new ObjectOutputStream(player1.getOutputStream());
+                                p1Out.writeObject(mm);
+                                p1Out.flush();
+                            } catch (IOException ioe) {
+                                Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                            }
+                            break;
+                        case 2:
+                            try {
+                                MoveMessage mm = new MoveMessage("board", null);
+                                mm.setMove(move);
+                                p2Out = new ObjectOutputStream(player2.getOutputStream());
+                                p2Out.writeObject(mm);
+                                p2Out.flush();
+                            } catch (IOException ioe) {
+                                Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    //Update players
+                    try {
+                        MoveMessage mm = new MoveMessage("board", null);
+                        mm.isValid();
+                        mm.setMove(move);
+                        p1Out = new ObjectOutputStream(player1.getOutputStream());
+                        p1Out.writeObject(mm);
+                        p1Out.flush();
+                    } catch (IOException ioe) {
+                        Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                    }
+                    try {
+                        MoveMessage mm = new MoveMessage("board", null);
+                        mm.isValid();
+                        mm.setMove(move);
+                        p2Out = new ObjectOutputStream(player2.getOutputStream());
+                        p2Out.writeObject(mm);
+                        p2Out.flush();
+                    } catch (IOException ioe) {
+                        Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                    }
                 }
             }
         }
