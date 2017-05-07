@@ -64,14 +64,13 @@ public class Board {
         if (piece == null || (isWhiteTurn && piece.getColor().equalsIgnoreCase("black")) || (!isWhiteTurn && piece.getColor().equalsIgnoreCase("white"))) {
             return false;
         }
-
-        //If the king is in check, force the player to move the king
-        if (!(piece instanceof King) && inCheck) {
-            return false;
-        }
-
-        //Make the requested move if it is valid
+        //if the king is in check, ensure that he is not in check after the move
         boolean isValid = piece.isValidMove(this, move.TARGET_X, move.TARGET_Y);
+        if (inCheck && isValid) {
+            King king = piece.getColor().equalsIgnoreCase("white") ? whiteKing : blackKing;
+            isValid = !king.isMoveIntoCheck(this, move);
+        }
+        //Make the requested move if it is valid
         if (isValid) {
             //Move the piece
             BOARD[move.START_X][move.START_Y] = null;
@@ -168,6 +167,53 @@ public class Board {
      */
     public Piece getPiece(int column, int row) {
         return BOARD[column][row];
+    }
+
+    /**
+     * Moves a piece to a specified location without move validation. This
+     * method does not provide move validation. It is intended to use only to
+     * temporarily move a king to simplify testing whether he is in check or not
+     *
+     * @param piece the piece to move to the specified location
+     * @param column the column to which the piece should be moved
+     * @param row the row to which the piece should be moved
+     */
+    public void setPiece(Piece piece, int column, int row) {
+        BOARD[column][row] = piece;
+    }
+
+    /**
+     * Adds the piece to the list of alive pieces of its color
+     *
+     * @param piece the piece to add to the list of alive pieces
+     */
+    public void addPiece(Piece piece) {
+        if (piece == null) {
+            return;
+        }
+        String color = piece.getColor();
+        if (color.equalsIgnoreCase("white")) {
+            whitePieces.add(piece);
+        } else {
+            blackPieces.add(piece);
+        }
+    }
+
+    /**
+     * Removes the piece from the list of alive pieces of its color
+     *
+     * @param piece the piece to remove from the list of alive pieces
+     */
+    public void removePiece(Piece piece) {
+        if (piece == null) {
+            return;
+        }
+        String color = piece.getColor();
+        if (color.equalsIgnoreCase("white")) {
+            whitePieces.remove(piece);
+        } else {
+            blackPieces.remove(piece);
+        }
     }
 
     /*
