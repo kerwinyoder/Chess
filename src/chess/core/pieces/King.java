@@ -96,14 +96,15 @@ public class King extends Piece {
     public boolean isMoveIntoCheck(Board board, Move move) {
         boolean isCheck = false;
         //temporarily move the king to test if the king will be in check at the new location.
+        Piece piece = board.getPiece(move.START_X, move.START_Y);
         Piece victim = board.getPiece(move.TARGET_X, move.TARGET_Y);
         if (victim != null) {
             board.removePiece(victim);
         }
-        board.setPiece(null, xPos, yPos);
-        xPos = move.TARGET_X;
-        yPos = move.TARGET_Y;
-        board.setPiece(this, move.TARGET_X, move.TARGET_Y);
+        board.setPiece(null, move.START_X, move.START_Y);
+        piece.setXPos(move.TARGET_X);
+        piece.setYPos(move.TARGET_Y);
+        board.setPiece(piece, move.TARGET_X, move.TARGET_Y);
         isCheck = isInCheck(board);
 
         //move the pieces back to their original locations
@@ -111,9 +112,9 @@ public class King extends Piece {
         if (victim != null) {
             board.addPiece(victim);
         }
-        board.setPiece(this, move.START_X, move.START_Y);
-        xPos = move.START_X;
-        yPos = move.START_Y;
+        board.setPiece(piece, move.START_X, move.START_Y);
+        piece.setXPos(move.START_X);
+        piece.setYPos(move.START_Y);
         return isCheck;
     }
 
