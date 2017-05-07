@@ -37,15 +37,18 @@ public class King extends Piece {
         switch (deltaX) {
             case 0:
             case 1:
-                /*!isTurn handles the case where a king is capturing a piece that is protected by the opposing king. 
-                Without it, the opposing king's isValidMove() will return false when the attacking king's isMoveIntoCheck() 
-                is called if an enemy can move to the contested square.*/
-                boolean isTurn = isTurn(board);
-                if (((deltaY == 0 || deltaY == 1) && !isMoveIntoCheck(board, new Move(xPos, yPos, targetXPos, targetYPos))) || !isTurn) {
-                    if (isTurn) {
+                if (deltaY == 0 || deltaY == 1) {
+                    /*!isTurn handles the case where a king is capturing a piece that is protected by the opposing king. 
+                    Without it, the opposing king's isValidMove() will return false when the attacking king's isMoveIntoCheck() 
+                    is called if an enemy can move to the contested square.*/
+                    boolean isTurn = isTurn(board);
+                    Piece victim = board.getPiece(targetXPos, targetYPos);
+                    if (!isTurn && victim != null && victim instanceof King) {
+                        return true;
+                    } else if (!isMoveIntoCheck(board, new Move(xPos, yPos, targetXPos, targetYPos))) {
                         hasMoved = true;
+                        return true;
                     }
-                    return true;
                 } else {
                     return false;
                 }
