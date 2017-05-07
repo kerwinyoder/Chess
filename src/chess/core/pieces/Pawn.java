@@ -14,7 +14,7 @@ public class Pawn extends Piece {
     /**
      * Creates a new Pawn with the given position, color, and type
      *
-     * @param x the columnn of the position
+     * @param x the column of the position
      * @param y the row of the position
      * @param color the color of the piece
      * @param type the type of the piece
@@ -42,7 +42,7 @@ public class Pawn extends Piece {
                 }
             case 1: //moving to the side one square to capture a piece
                 if (deltaY == 1) {
-                    return isOccupiedByFoe(board, targetXPos, targetYPos) || isEnPassant(board, targetXPos, targetYPos) || (!isTurn(board) && isOccupiedByFriend(board, targetXPos, targetYPos));
+                    return isOccupiedByFoe(board, targetXPos, targetYPos) || isEnPassant(board, targetXPos, targetYPos);
                 } else {
                     return false;
                 }
