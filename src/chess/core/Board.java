@@ -64,14 +64,13 @@ public class Board {
         if (piece == null || (isWhiteTurn && piece.getColor().equalsIgnoreCase("black")) || (!isWhiteTurn && piece.getColor().equalsIgnoreCase("white"))) {
             return false;
         }
-
-        //If the king is in check, force the player to move the king
-        if (!(piece instanceof King) && inCheck) {
-            return false;
-        }
-
-        //Make the requested move if it is valid
+        //if the king is in check, ensure that he is not in check after the move
         boolean isValid = piece.isValidMove(this, move.TARGET_X, move.TARGET_Y);
+        if (inCheck && isValid) {
+            King king = piece.getColor().equalsIgnoreCase("white") ? whiteKing : blackKing;
+            isValid = !king.isMoveIntoCheck(this, move);
+        }
+        //Make the requested move if it is valid
         if (isValid) {
             //Move the piece
             BOARD[move.START_X][move.START_Y] = null;
