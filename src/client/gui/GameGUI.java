@@ -348,6 +348,7 @@ public class GameGUI extends javax.swing.JFrame {
     public void updateBoard(MoveMessage m) {
         Integer[] move = m.getMove();
         if (m.getValid()) {
+
             Piece curr = pieces[move[1]][move[0]];
             pieces[move[3]][move[2]] = curr;
             if (curr.getType().equals("king")) {
@@ -362,14 +363,19 @@ public class GameGUI extends javax.swing.JFrame {
                 }
             }
             pieces[move[1]][move[0]] = null;
+
             if (m.getEnPassant()) {
                 Integer[] target = m.getTarget();
                 System.out.println(target[0] + " " + target[1]);
                 pieces[target[0]][target[1]] = null;
             }
             if (m.getPromotion()) {
-                if (m.getTarget() != null) {
-                    Promotion p = new Promotion((Pawn) pieces[move[3]][move[2]], client);
+                if (m.getTarget() == null) {
+                    Pawn pawn = (Pawn) pieces[move[3]][move[2]];
+                    pawn.setXPos(move[3]);
+                    pawn.setYPos(move[2]);
+                    Promotion p = new Promotion(pawn, client);
+                    p.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     p.setVisible(true);
                 } else {
                     Integer[] t = m.getTarget();
