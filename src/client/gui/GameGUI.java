@@ -6,7 +6,12 @@
 package client.gui;
 
 import chess.core.Board;
+import chess.core.pieces.Bishop;
+import chess.core.pieces.Knight;
+import chess.core.pieces.Pawn;
 import chess.core.pieces.Piece;
+import chess.core.pieces.Queen;
+import chess.core.pieces.Rook;
 import client.Client;
 import communication.MoveMessage;
 import java.awt.Color;
@@ -362,7 +367,31 @@ public class GameGUI extends javax.swing.JFrame {
                 System.out.println(target[0] + " " + target[1]);
                 pieces[target[0]][target[1]] = null;
             }
-            myTurn = !myTurn;
+            if (m.getPromotion()) {
+                if (m.getTarget() != null) {
+                    Promotion p = new Promotion((Pawn) pieces[move[3]][move[2]], client);
+                    p.setVisible(true);
+                } else {
+                    Integer[] t = m.getTarget();
+                    switch (m.getChoice()) {
+                        case "Q":
+                            pieces[t[1]][t[0]] = new Queen(t[1], t[0], m.getColor(), "queen");
+                            break;
+                        case "R":
+                            pieces[t[1]][t[0]] = new Rook(t[1], t[0], m.getColor(), "rook");
+                            break;
+                        case "B":
+                            pieces[t[1]][t[0]] = new Bishop(t[1], t[0], m.getColor(), "bishop");
+                            break;
+                        case "N":
+                            pieces[t[1]][t[0]] = new Knight(t[1], t[0], m.getColor(), "knight");
+                            break;
+                    }
+                    myTurn = !myTurn;
+                }
+            } else {
+                myTurn = !myTurn;
+            }
         } else {
             jTextField1.setForeground(Color.RED);
             jTextField1.setText("Invalid Move!");

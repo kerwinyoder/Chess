@@ -144,18 +144,44 @@ public class GameConnection implements Runnable {
                 String choice = null;
                 Move m = null;
 
-//                if (!promotion) {
-                s = (Socket) moveCommand[0];
-                move = (Integer[]) moveCommand[1];
-                m = new Move(move[1], move[0], move[3], move[2]);
+                if (!g.getPromotionInProgress()) {
+                    s = (Socket) moveCommand[0];
+                    move = (Integer[]) moveCommand[1];
+                    m = new Move(move[1], move[0], move[3], move[2]);
 
-                isValid = g.move(m);
-//                } else {
-//                    s = (Socket) moveCommand[0];
-//                    target = (Integer[]) moveCommand[1];
-//                    color = (String) moveCommand[2];
-//                    choice = (String) moveCommand[3];
-//                }
+                    isValid = g.move(m);
+                } else {
+                    s = (Socket) moveCommand[0];
+                    target = (Integer[]) moveCommand[1];
+                    choice = (String) moveCommand[2];
+                    Piece p = g.getPiece(target[0], target[1]);
+
+                    g.promotePawn(p, choice);
+
+                    try {
+                        MoveMessage mm = new MoveMessage("board", null);
+                        mm.isPromotion();
+                        mm.setTarget(target);
+                        mm.setChoice(choice);
+                        mm.setColor(p.getColor());
+                        p1Out = new ObjectOutputStream(player2.getOutputStream());
+                        p1Out.writeObject(mm);
+                        p1Out.flush();
+                    } catch (IOException ioe) {
+                        Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                    }
+                    try {
+                        MoveMessage mm = new MoveMessage("board", null);
+                        mm.isPromotion();
+                        mm.setTarget(target);
+                        mm.setChoice(choice);
+                        p2Out = new ObjectOutputStream(player2.getOutputStream());
+                        p2Out.writeObject(mm);
+                        p2Out.flush();
+                    } catch (IOException ioe) {
+                        Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
+                    }
+                }
 
                 if (!isValid) {
                     int p = findPlayer(s);
@@ -211,6 +237,9 @@ public class GameConnection implements Runnable {
                             mm.setEnPassant();
                             target = new Integer[]{move[3], move[0]};
                             mm.setTarget(target);
+                        }
+                        if (g.getPromotionInProgress()) {
+                            mm.isPromotion();
                         }
                         mm.setTime(timeTaken);
                         mm.setMove(move);
@@ -280,7 +309,7 @@ public class GameConnection implements Runnable {
                 if (!m.getPromotion()) {
                     return new Object[]{s, m.getMove()};
                 } else {
-                    return new Object[]{s, m.getTarget(), m.getColor(), m.getChoice()};
+                    return new Object[]{s, m.getTarget(), m.getChoice()};
                 }
             }
         }

@@ -7,8 +7,14 @@ package client.gui;
 
 import chess.core.pieces.Pawn;
 import chess.core.pieces.Piece;
+import client.Client;
+import communication.MoveMessage;
 import java.awt.Font;
 import java.awt.Insets;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,6 +22,7 @@ import java.awt.Insets;
  */
 public class Promotion extends javax.swing.JFrame {
 
+    private static Client client;
     private static Pawn piece;
     private int y;
     private int x;
@@ -25,12 +32,13 @@ public class Promotion extends javax.swing.JFrame {
     /**
      * Creates new form Promotion
      */
-    public Promotion(Pawn piece) {
+    public Promotion(Pawn piece, Client c) {
         this.piece = piece;
         this.color = this.piece.getColor();
         this.y = this.piece.getYPos();
         this.x = this.piece.getXPos();
         this.setTitle("Promotion!");
+        client = c;
 
         initComponents();
         setButtons(color);
@@ -62,8 +70,6 @@ public class Promotion extends javax.swing.JFrame {
         this.jButtonQueenPromo.setMargin(new Insets(0, 0, 0, 0));
 
     }
-    
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -154,19 +160,40 @@ public class Promotion extends javax.swing.JFrame {
 
     private void jButtonBishopPromoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBishopPromoActionPerformed
         this.returnType = "bishop";
+        sendType("B");
     }//GEN-LAST:event_jButtonBishopPromoActionPerformed
 
     private void jButtonKnightPromoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonKnightPromoActionPerformed
         this.returnType = "knight";
+        sendType("N");
     }//GEN-LAST:event_jButtonKnightPromoActionPerformed
 
     private void jButtonQueenPromoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonQueenPromoActionPerformed
         this.returnType = "queen";
+        sendType("Q");
     }//GEN-LAST:event_jButtonQueenPromoActionPerformed
 
     private void jButtonRookPromoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRookPromoActionPerformed
         this.returnType = "rook";
+        sendType("R");
     }//GEN-LAST:event_jButtonRookPromoActionPerformed
+
+    private void sendType(String type) {
+        MoveMessage m = new MoveMessage("move", null);
+        m.isPromotion();
+        Integer[] target = new Integer[]{this.x, this.y};
+        m.setTarget(target);
+        m.setChoice(type);
+
+        ObjectOutputStream out;
+        try {
+            out = new ObjectOutputStream(client.socket.getOutputStream());
+            out.writeUnshared(m);
+            out.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Promotion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -175,7 +202,7 @@ public class Promotion extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -198,7 +225,7 @@ public class Promotion extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Promotion(piece).setVisible(true);
+                new Promotion(piece, client).setVisible(true);
             }
         });
     }

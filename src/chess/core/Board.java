@@ -28,6 +28,8 @@ public class Board {
     private boolean isWhiteTurn;
     //Tracks if a successful EnPassant was performed
     private boolean successfulEnPassant;
+    //Tracks if the server is waiting on a promotion from the user
+    private boolean promotionInProgress;
     //used to check for 50 consecutive moves without moving a pawn or capturing a piece
     private int moveCount;
     //used to check for draw by three fold repetition.
@@ -44,6 +46,7 @@ public class Board {
         inCheck = false;
         isWhiteTurn = true;
         successfulEnPassant = false;
+        promotionInProgress = false;
         moveCount = 0;
         stateCount = new HashMap<>(100);
         initialPopulate();
@@ -119,7 +122,8 @@ public class Board {
                     enPassantVictim = piece;
                 } //if the pawn reached the far side of the board, promote it
                 else if (isPawnPromoted((Pawn) piece, move)) {
-                    promotePawn((Pawn) piece, move);
+                    promotionInProgress = true;
+//                    promotePawn((Pawn) piece, move);
                 }
                 //reset the move count since a pawn was moved
                 moveCount = 0;
@@ -143,7 +147,9 @@ public class Board {
             }
             King king = piece.getColor().equalsIgnoreCase("white") ? blackKing : whiteKing;
             inCheck = king.isInCheck(this);
-            isWhiteTurn = !isWhiteTurn;
+            if (!promotionInProgress) {
+                isWhiteTurn = !isWhiteTurn;
+            }
         }
         return isValid;
     }
@@ -165,6 +171,14 @@ public class Board {
      */
     public boolean getSuccessfulEnPassant() {
         return successfulEnPassant;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean getPromotionInProgress() {
+        return promotionInProgress;
     }
 
     /**
@@ -254,28 +268,24 @@ public class Board {
      * @param pawn the pawn that is being promoted
      * @param move the move that lead to the pawn's promotion
      */
-    private void promotePawn(Pawn pawn, Move move) {
-        Scanner scanner = new Scanner(System.in);
-        String input;
+    public void promotePawn(Piece p, String choice) {
+        Pawn pawn = (Pawn) p;
+        Move move = new Move(0, 0, pawn.getXPos(), pawn.getYPos());
         Piece newPiece = null;
-        do {
-            System.out.println("Please select the new type of the piece (Q, R, B, N)");
-            input = scanner.nextLine().toUpperCase();
-            switch (input) {
-                case "Q":
-                    newPiece = new Queen(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "queen");
-                    break;
-                case "R":
-                    newPiece = new Rook(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "rook");
-                    break;
-                case "B":
-                    newPiece = new Bishop(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "bishop");
-                    break;
-                case "N":
-                    newPiece = new Knight(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "knight");
-                    break;
-            }
-        } while (!input.equals("Q") && !input.equals("R") && !input.equals("B") && !input.equals("N"));
+        switch (choice) {
+            case "Q":
+                newPiece = new Queen(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "queen");
+                break;
+            case "R":
+                newPiece = new Rook(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "rook");
+                break;
+            case "B":
+                newPiece = new Bishop(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "bishop");
+                break;
+            case "N":
+                newPiece = new Knight(move.TARGET_X, move.TARGET_Y, pawn.getColor(), "knight");
+                break;
+        }
 
         //update the list of pieces that are alive
         if (pawn.getColor().equalsIgnoreCase("white")) {
@@ -286,6 +296,7 @@ public class Board {
             blackPieces.add(newPiece);
         }
         BOARD[move.TARGET_X][move.TARGET_Y] = newPiece;
+        promotionInProgress = false;
     }
 
     /*
