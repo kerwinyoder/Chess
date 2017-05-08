@@ -416,6 +416,24 @@ public class GameGUI extends javax.swing.JFrame {
         return color != null;
     }
 
+    public void printEnd(MoveMessage m) {
+        switch (m.getReason()) {
+            case "checkmate":
+                if (m.getColor().equals(color)) {
+                    jTextField1.setForeground(Color.RED);
+                    jTextField1.setText("Defeat!");
+                } else {
+                    jTextField1.setForeground(Color.BLUE);
+                    jTextField1.setText("Victory!");
+                }
+                break;
+            case "draw":
+                jTextField1.setForeground(Color.RED);
+                jTextField1.setText("Draw!");
+                break;
+        }
+    }
+
     private int[] getButton(JButton b) {
         int[] click = new int[2];
         for (int i = 0; i < 8; i++) {

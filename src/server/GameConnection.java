@@ -200,6 +200,13 @@ public class GameConnection implements Runnable {
 
         MoveMessage end = new MoveMessage("end", null);
 
+        if (g.isCheckMate()) {
+            end.setColor(g.checkmatedKing());
+            end.setReason("checkmate");
+        } else if (g.isMandatoryDraw()) {
+            end.setReason("draw");
+        }
+
         try {
             p1Out = new ObjectOutputStream(player1.getOutputStream());
             p1Out.writeUnshared(end);

@@ -453,6 +453,19 @@ public class Board {
         }
     }
 
+    /**
+     * Checks which king is in checkmate.
+     *
+     * @return The color of the king in checkmate
+     */
+    public String checkmatedKing() {
+        if (whiteKing.isCheckmated(this)) {
+            return "white";
+        } else {
+            return "black";
+        }
+    }
+
     private String getState() {
         StringBuilder builder = new StringBuilder();
         Piece piece;

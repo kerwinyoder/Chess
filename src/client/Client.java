@@ -102,9 +102,11 @@ public class Client {
                         game = new GameGUI(this);
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
+                        game.setAlwaysOnTop(true);
                         gui.setVisible(false);
                         break;
                     case "end"://End the game for this client
+                        game.printEnd((MoveMessage) m);
                         gui.setVisible(true);
                         break;
                     case "list"://Server is distributing the client list
