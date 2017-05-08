@@ -14,9 +14,13 @@ import java.io.Serializable;
 public class MoveMessage extends Message implements Serializable {
 
     private Integer[] move;
+    private Integer[] target;
+    private boolean enPassant = false;
+    private boolean promotion = false;
     private boolean valid = false;
     private long timeTaken;
     private String reason;
+    private String choice;
 
     public MoveMessage(String h, Object b) {
         super(h, b);
@@ -52,6 +56,41 @@ public class MoveMessage extends Message implements Serializable {
 
     public String getReason() {
         return reason;
+    }
+
+
+    /*Start promotion logic*/
+    public void isPromotion() {
+        promotion = true;
+    }
+
+    public boolean getPromotion() {
+        return promotion;
+    }
+
+    public void setChoice(String c) {
+        choice = c;
+    }
+
+    public String getChoice() {
+        return choice;
+    }
+
+    /*Promotion and En Passant Target*/
+    public void setEnPassant() {
+        enPassant = true;
+    }
+
+    public boolean getEnPassant() {
+        return enPassant;
+    }
+
+    public void setTarget(Integer[] i) {
+        target = i;
+    }
+
+    public Integer[] getTarget() {
+        return target;
     }
 
 }

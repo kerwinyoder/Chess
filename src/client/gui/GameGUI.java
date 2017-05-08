@@ -345,6 +345,10 @@ public class GameGUI extends javax.swing.JFrame {
         if (m.getValid()) {
             pieces[move[3]][move[2]] = pieces[move[1]][move[0]];
             pieces[move[1]][move[0]] = null;
+            if (m.getEnPassant()) {
+                Integer[] target = m.getTarget();
+                pieces[target[0]][target[1]] = null;
+            }
             myTurn = !myTurn;
         } else {
             jTextField1.setForeground(Color.RED);

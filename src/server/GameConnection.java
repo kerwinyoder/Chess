@@ -132,11 +132,28 @@ public class GameConnection implements Runnable {
             }
 
             if (moveCommand != null) {
-                Socket s = (Socket) moveCommand[0];
-                Integer[] move = (Integer[]) moveCommand[1];
-                Move m = new Move(move[1], move[0], move[3], move[2]);
 
-                boolean isValid = g.move(m);
+                boolean isValid = false;
+                Socket s = null;
+                Integer[] move = null;
+                Integer[] target = null;
+                String color = null;
+                String choice = null;
+                Move m = null;
+
+//                if (!promotion) {
+                s = (Socket) moveCommand[0];
+                move = (Integer[]) moveCommand[1];
+                m = new Move(move[1], move[0], move[3], move[2]);
+
+                isValid = g.move(m);
+//                } else {
+//                    s = (Socket) moveCommand[0];
+//                    target = (Integer[]) moveCommand[1];
+//                    color = (String) moveCommand[2];
+//                    choice = (String) moveCommand[3];
+//                }
+
                 if (!isValid) {
                     int p = findPlayer(s);
                     switch (p) {
@@ -171,6 +188,11 @@ public class GameConnection implements Runnable {
                     try {
                         MoveMessage mm = new MoveMessage("board", null);
                         mm.isValid();
+                        if (g.getEnPassantVictim() != null) {
+                            mm.setEnPassant();
+                            target = new Integer[]{g.getEnPassantVictim().getXPos(), g.getEnPassantVictim().getYPos()};
+                            mm.setTarget(target);
+                        }
                         mm.setTime(timeTaken);
                         mm.setMove(move);
                         p1Out = new ObjectOutputStream(player1.getOutputStream());
@@ -182,6 +204,11 @@ public class GameConnection implements Runnable {
                     try {
                         MoveMessage mm = new MoveMessage("board", null);
                         mm.isValid();
+                        if (g.getEnPassantVictim() != null) {
+                            mm.setEnPassant();
+                            target = new Integer[]{g.getEnPassantVictim().getXPos(), g.getEnPassantVictim().getYPos()};
+                            mm.setTarget(target);
+                        }
                         mm.setTime(timeTaken);
                         mm.setMove(move);
                         p2Out = new ObjectOutputStream(player2.getOutputStream());
@@ -247,7 +274,11 @@ public class GameConnection implements Runnable {
                 //Did not read an object
             }
             if (m != null) {
-                return new Object[]{s, m.getMove()};
+                if (!m.getPromotion()) {
+                    return new Object[]{s, m.getMove()};
+                } else {
+                    return new Object[]{s, m.getTarget(), m.getColor(), m.getChoice()};
+                }
             }
         }
         return null;

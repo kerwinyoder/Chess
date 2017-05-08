@@ -102,8 +102,6 @@ public class Client {
                         game = new GameGUI(this);
                         game.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         game.setVisible(true);
-                        game.setAlwaysOnTop(true);
-                        game.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                         gui.setVisible(false);
                         break;
                     case "end"://End the game for this client
