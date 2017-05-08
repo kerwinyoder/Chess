@@ -346,13 +346,13 @@ public class GameGUI extends javax.swing.JFrame {
             Piece curr = pieces[move[1]][move[0]];
             pieces[move[3]][move[2]] = curr;
             if (curr.getType().equals("king")) {
-                if (Math.abs(move[3] - move[1]) == 2) {
+                if (Math.abs(move[2] - move[0]) == 2) {
                     if (move[3] == 2) {
-                        pieces[3][move[3]] = pieces[0][move[3]];
-                        pieces[0][move[3]] = null;
+                        pieces[move[2]][3] = pieces[move[2]][0];
+                        pieces[move[2]][0] = null;
                     } else {
-                        pieces[5][move[3]] = pieces[7][move[3]];
-                        pieces[7][move[3]] = null;
+                        pieces[move[2]][5] = pieces[move[2]][7];
+                        pieces[move[2]][7] = null;
                     }
                 }
             }
