@@ -348,11 +348,11 @@ public class GameGUI extends javax.swing.JFrame {
             if (curr.getType().equals("king")) {
                 if (Math.abs(move[3] - move[1]) == 2) {
                     if (move[3] == 2) {
-                        pieces[move[2]][3] = pieces[move[2]][0];
-                        pieces[move[2]][0] = null;
+                        pieces[3][move[2]] = pieces[0][move[2]];
+                        pieces[0][move[2]] = null;
                     } else {
-                        pieces[move[2]][5] = pieces[move[2]][7];
-                        pieces[move[2]][7] = null;
+                        pieces[5][move[2]] = pieces[7][move[2]];
+                        pieces[7][move[2]] = null;
                     }
                 }
             }
