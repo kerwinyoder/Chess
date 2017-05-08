@@ -7,6 +7,7 @@ package server;
 
 import chess.core.Board;
 import chess.core.Move;
+import chess.core.pieces.Piece;
 import communication.MoveMessage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -120,6 +121,8 @@ public class GameConnection implements Runnable {
         long startTime = System.nanoTime();
         do {
 
+            Piece[][] b = g.getBoard();
+
             checkMate = g.isCheckMate();
             draw = g.isMandatoryDraw();
             isOver = checkMate || draw;
@@ -188,9 +191,9 @@ public class GameConnection implements Runnable {
                     try {
                         MoveMessage mm = new MoveMessage("board", null);
                         mm.isValid();
-                        if (g.getEnPassantVictim() != null) {
+                        if (g.getSuccessfulEnPassant()) {
                             mm.setEnPassant();
-                            target = new Integer[]{g.getEnPassantVictim().getXPos(), g.getEnPassantVictim().getYPos()};
+                            target = new Integer[]{move[3], move[0]};
                             mm.setTarget(target);
                         }
                         mm.setTime(timeTaken);
@@ -204,9 +207,9 @@ public class GameConnection implements Runnable {
                     try {
                         MoveMessage mm = new MoveMessage("board", null);
                         mm.isValid();
-                        if (g.getEnPassantVictim() != null) {
+                        if (g.getSuccessfulEnPassant()) {
                             mm.setEnPassant();
-                            target = new Integer[]{g.getEnPassantVictim().getXPos(), g.getEnPassantVictim().getYPos()};
+                            target = new Integer[]{move[3], move[0]};
                             mm.setTarget(target);
                         }
                         mm.setTime(timeTaken);

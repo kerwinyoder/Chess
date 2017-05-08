@@ -343,10 +343,23 @@ public class GameGUI extends javax.swing.JFrame {
     public void updateBoard(MoveMessage m) {
         Integer[] move = m.getMove();
         if (m.getValid()) {
-            pieces[move[3]][move[2]] = pieces[move[1]][move[0]];
+            Piece curr = pieces[move[1]][move[0]];
+            pieces[move[3]][move[2]] = curr;
+            if (curr.getType().equals("king")) {
+                if (Math.abs(move[3] - move[1]) == 2) {
+                    if (move[3] == 2) {
+                        pieces[move[3]][3] = pieces[move[3]][0];
+                        pieces[move[3]][0] = null;
+                    } else {
+                        pieces[move[3]][5] = pieces[move[3]][7];
+                        pieces[move[3]][7] = null;
+                    }
+                }
+            }
             pieces[move[1]][move[0]] = null;
             if (m.getEnPassant()) {
                 Integer[] target = m.getTarget();
+                System.out.println(target[0] + " " + target[1]);
                 pieces[target[0]][target[1]] = null;
             }
             myTurn = !myTurn;

@@ -26,6 +26,8 @@ public class Board {
     //tracks whether the king of the opposing side was put in check by a move
     private boolean inCheck;
     private boolean isWhiteTurn;
+    //Tracks if a successful EnPassant was performed
+    private boolean successfulEnPassant;
     //used to check for 50 consecutive moves without moving a pawn or capturing a piece
     private int moveCount;
     //used to check for draw by three fold repetition.
@@ -41,6 +43,7 @@ public class Board {
         enPassantVictim = null;
         inCheck = false;
         isWhiteTurn = true;
+        successfulEnPassant = false;
         moveCount = 0;
         stateCount = new HashMap<>(100);
         initialPopulate();
@@ -76,8 +79,10 @@ public class Board {
             BOARD[move.START_X][move.START_Y] = null;
             Piece victim = BOARD[move.TARGET_X][move.TARGET_Y];
             //handle en passant moves
+            successfulEnPassant = false;
             if (piece instanceof Pawn && victim == null && move.TARGET_X - move.START_X != 0) {
                 victim = BOARD[move.TARGET_X][move.START_Y];
+                successfulEnPassant = true;
                 BOARD[move.TARGET_X][move.START_Y] = null;
             }
             BOARD[move.TARGET_X][move.TARGET_Y] = piece;
@@ -152,6 +157,14 @@ public class Board {
      */
     public Piece getEnPassantVictim() {
         return enPassantVictim;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean getSuccessfulEnPassant() {
+        return successfulEnPassant;
     }
 
     /**
