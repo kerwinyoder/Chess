@@ -68,7 +68,7 @@ public class Board {
         boolean isValid = piece.isValidMove(this, move.TARGET_X, move.TARGET_Y);
         if (inCheck && isValid) {
             King king = piece.getColor().equalsIgnoreCase("white") ? whiteKing : blackKing;
-            isValid = !king.isMoveIntoCheck(this, move);
+            isValid = !king.isCheckAfterMove(this, move);
         }
         //Make the requested move if it is valid
         if (isValid) {

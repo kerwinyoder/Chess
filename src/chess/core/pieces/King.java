@@ -45,7 +45,7 @@ public class King extends Piece {
                     Piece victim = board.getPiece(targetXPos, targetYPos);
                     if (!isTurn && victim != null && victim instanceof King) {
                         return true;
-                    } else if (!isMoveIntoCheck(board, new Move(xPos, yPos, targetXPos, targetYPos))) {
+                    } else if (!isCheckAfterMove(board, new Move(xPos, yPos, targetXPos, targetYPos))) {
                         hasMoved = true;
                         return true;
                     }
@@ -62,7 +62,7 @@ public class King extends Piece {
                 if (targetXPos == 2) {
                     //if the king is in check, will pass through check, or will be in check after moving, he cannot castle
                     for (int i = 4; i >= 2; --i) {
-                        if (isMoveIntoCheck(board, new Move(xPos, yPos, i, yPos))) {
+                        if (isCheckAfterMove(board, new Move(xPos, yPos, i, yPos))) {
                             return false;
                         }
                     }
@@ -72,7 +72,7 @@ public class King extends Piece {
                 else {
                     //if the king is in check, will pass through check, or will be in check after moving, he cannot castle
                     for (int i = 4; i <= 6; ++i) {
-                        if (isMoveIntoCheck(board, new Move(xPos, yPos, i, yPos))) {
+                        if (isCheckAfterMove(board, new Move(xPos, yPos, i, yPos))) {
                             return false;
                         }
                     }
@@ -93,7 +93,7 @@ public class King extends Piece {
      * @param targetYPos the row of the target location
      * @return true if the move will put the king in check and false otherwise
      */
-    public boolean isMoveIntoCheck(Board board, Move move) {
+    public boolean isCheckAfterMove(Board board, Move move) {
         boolean isCheck = false;
         //temporarily move the king to test if the king will be in check at the new location.
         Piece piece = board.getPiece(move.START_X, move.START_Y);
