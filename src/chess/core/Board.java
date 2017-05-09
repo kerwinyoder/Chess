@@ -123,7 +123,6 @@ public class Board {
                 } //if the pawn reached the far side of the board, promote it
                 else if (isPawnPromoted((Pawn) piece, move)) {
                     promotionInProgress = true;
-//                    promotePawn((Pawn) piece, move);
                 }
                 //reset the move count since a pawn was moved
                 moveCount = 0;
@@ -471,11 +470,83 @@ public class Board {
      * @return true if the game is over
      */
     public boolean isCheckMate() {
+        King king;
+        ArrayList<Piece> friendlyPieces;
+        ArrayList<Piece> attackingPieces = getAttackingPieces();
         if (isWhiteTurn) {
-            return whiteKing.isCheckmated(this);
+            king = whiteKing;
+            friendlyPieces = whitePieces;
         } else {
-            return blackKing.isCheckmated(this);
+            king = blackKing;
+            friendlyPieces = blackPieces;
         }
+
+        //if the king is not in check, he is not checkmated
+        if (!king.isInCheck(this)) {
+            return false;
+        }
+        //Check if the king has any valid moves
+        if (king.hasValidMoves(this)) {
+            return false;
+        }
+        for (Piece friendlyPiece : friendlyPieces) {
+            for (Piece attackingPiece : attackingPieces) {
+                int attackerXPos = attackingPiece.getXPos();
+                int attackerYPos = attackingPiece.getYPos();
+                int kingXPos = king.getXPos();
+                int kingYPos = king.getYPos();
+
+                //if the piece can capture the attacker and the king is not in check after the move
+                Move move = new Move(friendlyPiece.getXPos(), friendlyPiece.getYPos(), attackerXPos, attackerYPos);
+                if (friendlyPiece.isValidMove(this, attackerXPos, attackerYPos)
+                        && !king.isCheckAfterMove(this, move)) {
+                    return false;
+                }
+
+                //if the piece can block the attacker and the king is not in check after the move
+                //this applies only to bishops, rooks, and queens
+                move = new Move(attackerXPos, attackerYPos, kingXPos, kingYPos);
+                if (attackingPiece instanceof Bishop) {
+                    if (friendlyPiece.canBlockDiagonally(this, move) && !king.isCheckAfterMove(this, move)) {
+                        return false;
+                    }
+                } else if (attackingPiece instanceof Rook) {
+                    if ((attackingPiece.isHorizontal(kingXPos, kingYPos) && friendlyPiece.canBlockHorizontally(this, move))
+                            || attackingPiece.isVertical(kingXPos, kingYPos) && friendlyPiece.canBlockVertically(this, move)) {
+                        return false;
+                    }
+                } else if (attackingPiece instanceof Queen) {
+                    if (friendlyPiece.canBlockDiagonally(this, move)
+                            || attackingPiece.isHorizontal(kingXPos, kingYPos) && friendlyPiece.canBlockHorizontally(this, move)
+                            || attackingPiece.isVertical(kingXPos, kingYPos) && friendlyPiece.canBlockVertically(this, move)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /*
+     * Returns a list of the pieces that are attacking the king
+     */
+    private ArrayList<Piece> getAttackingPieces() {
+        ArrayList<Piece> attackers = new ArrayList<>();
+        ArrayList<Piece> list;
+        King king;
+        if (isWhiteTurn) {
+            list = blackPieces;
+            king = whiteKing;
+        } else {
+            list = whitePieces;
+            king = blackKing;
+        }
+        for (Piece piece : list) {
+            if (piece.isValidMove(this, king.getXPos(), king.getYPos())) {
+                attackers.add(piece);
+            }
+        }
+        return attackers;
     }
 
     /**
@@ -484,7 +555,7 @@ public class Board {
      * @return The color of the king in checkmate
      */
     public String checkmatedKing() {
-        if (whiteKing.isCheckmated(this)) {
+        if (isWhiteTurn) {
             return "white";
         } else {
             return "black";

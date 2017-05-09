@@ -128,21 +128,6 @@ public class King extends Piece {
         return board.isThreatened(xPos, yPos, COLOR);
     }
 
-    /**
-     * Checks if the King is checkmated
-     *
-     * @param board the board on which the King is located
-     * @return true if the King is checkmated and false otherwise
-     */
-    public boolean isCheckmated(Board board) {
-        //if the king is not in check, he is not checkmated
-        if (!isInCheck(board)) {
-            return false;
-        }
-        //Check if the king has any valid moves
-        return !hasValidMoves(board);
-    }
-
     //check all possible moves to see if there is a valid move
     public boolean hasValidMoves(Board board) {
         for (int i = xPos - 1; i <= xPos + 1; ++i) {

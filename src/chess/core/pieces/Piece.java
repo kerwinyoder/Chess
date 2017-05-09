@@ -1,6 +1,7 @@
 package chess.core.pieces;
 
 import chess.core.Board;
+import chess.core.Move;
 import java.io.Serializable;
 
 /**
@@ -26,7 +27,6 @@ public abstract class Piece implements Serializable {
      * The color of the piece
      */
     protected final String COLOR;
-
 
     /**
      * The type of the piece
@@ -140,7 +140,7 @@ public abstract class Piece implements Serializable {
      * @return true if the target position can be reached by making a horizontal
      * move from the piece's current position
      */
-    protected final boolean isHorizontal(int targetXPos, int targetYPos) {
+    public final boolean isHorizontal(int targetXPos, int targetYPos) {
         return yPos == targetYPos && targetXPos != xPos;
     }
 
@@ -153,7 +153,7 @@ public abstract class Piece implements Serializable {
      * @return true if the target position can be reached by making a vertical
      * move from the piece's current position
      */
-    protected final boolean isVertical(int targetXPos, int targetYPos) {
+    public final boolean isVertical(int targetXPos, int targetYPos) {
         return xPos == targetXPos && targetYPos != yPos;
     }
 
@@ -184,11 +184,39 @@ public abstract class Piece implements Serializable {
             return false;
         }
 
-        //check if any pieces block the path 
+        //check if any pieces block the path
         int max = Math.max(xPos, targetXPos);
         int min = Math.min(xPos, targetXPos);
         for (int i = min + 1; i < max; ++i) {
             if (board.getPiece(i, yPos) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the piece can block an enemy piece vertically
+     *
+     * @param board the board on which the piece is located
+     * @param move the move that the piece is attempting to block from the enemy
+     * piece's position to the king's current position
+     * @return
+     */
+    public final boolean canBlockHorizontally(Board board, Move move) {
+        int enemyXPos = move.START_X;
+        int enemyYPos = move.START_Y;
+        int kingXPos = move.TARGET_X;
+        //if the move is less than two blocks, the path cannot be blocked
+        if (Math.abs(kingXPos - enemyXPos) < 2) {
+            return false;
+        }
+
+        //check if any pieces block the path
+        int max = Math.max(enemyXPos, kingXPos);
+        int min = Math.min(enemyXPos, kingXPos);
+        for (int i = min + 1; i < max; ++i) {
+            if (board.getPiece(i, enemyYPos) != null) {
                 return true;
             }
         }
@@ -209,11 +237,39 @@ public abstract class Piece implements Serializable {
             return false;
         }
 
-        //check if any pieces block the path 
+        //check if any pieces block the path
         int max = Math.max(yPos, targetYPos);
         int min = Math.min(yPos, targetYPos);
         for (int i = min + 1; i < max; ++i) {
             if (board.getPiece(xPos, i) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the piece can block an enemy piece horizontally
+     *
+     * @param board the board on which the piece is located
+     * @param move the move that the piece is attempting to block from the enemy
+     * piece's position to the king's current position
+     * @return
+     */
+    public final boolean canBlockVertically(Board board, Move move) {
+        int enemyXPos = move.START_X;
+        int enemyYPos = move.START_Y;
+        int kingYPos = move.TARGET_Y;
+        //if the move is less than two blocks, the path cannot be blocked
+        if (Math.abs(kingYPos - enemyYPos) < 2) {
+            return false;
+        }
+
+        //check if any pieces block the path
+        int max = Math.max(enemyYPos, kingYPos);
+        int min = Math.min(enemyYPos, kingYPos);
+        for (int i = min + 1; i < max; ++i) {
+            if (board.getPiece(enemyXPos, i) != null) {
                 return true;
             }
         }
@@ -277,6 +333,65 @@ public abstract class Piece implements Serializable {
     }
 
     /**
+     * Checks if the piece can block an enemy piece diagonally
+     *
+     * @param board the board on which the piece is located
+     * @param move the move that the piece is attempting to block from the enemy
+     * piece's position to the king's current position
+     * @return
+     */
+    public final boolean canBlockDiagonally(Board board, Move move) {
+        int enemyXPos = move.START_X;
+        int enemyYPos = move.START_Y;
+        int kingXPos = move.TARGET_X;
+        int kingYPos = move.TARGET_Y;
+        int x;
+        int y;
+        if (kingXPos <= enemyXPos && kingYPos <= enemyYPos) {
+            x = kingXPos + 1;
+            y = kingYPos + 1;
+            while (x < enemyXPos && kingYPos < enemyYPos) {
+                if (isValidMove(board, x, y)) {
+                    return true;
+                }
+                ++x;
+                ++y;
+            }
+        } else if (kingXPos <= enemyXPos && kingYPos > enemyYPos) {
+            x = kingXPos + 1;
+            y = kingYPos - 1;
+            while (x < enemyXPos && kingYPos > enemyYPos) {
+                if (isValidMove(board, x, y)) {
+                    return true;
+                }
+                ++x;
+                --y;
+            }
+        } else if (kingXPos > enemyXPos && kingYPos <= enemyYPos) {
+            x = kingXPos - 1;
+            y = kingYPos + 1;
+            while (x > enemyXPos && kingYPos < enemyYPos) {
+                if (isValidMove(board, x, y)) {
+                    return true;
+                }
+                --x;
+                ++y;
+            }
+        } else if (kingXPos > enemyXPos && kingYPos > enemyYPos) {
+            x = kingXPos - 1;
+            y = kingYPos - 1;
+            while (x > enemyXPos && kingYPos > enemyYPos) {
+                if (isValidMove(board, x, y)) {
+                    return true;
+                }
+                --x;
+                --y;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if the given position is occupied by any piece
      *
      * @param board the board on which the piece is located
@@ -316,9 +431,10 @@ public abstract class Piece implements Serializable {
         Piece destPiece = board.getPiece(targetXPos, targetYPos);
         return destPiece != null && !destPiece.getColor().equalsIgnoreCase(COLOR);
     }
-    
+
     /**
      * Checks if it is this piece's turn
+     *
      * @param board the board on which the piece is located
      * @return true if it is this piece's turn
      */
