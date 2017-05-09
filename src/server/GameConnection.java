@@ -123,10 +123,6 @@ public class GameConnection implements Runnable {
 
             Piece[][] b = g.getBoard();
 
-            checkMate = g.isCheckMate();
-            draw = g.isMandatoryDraw();
-            isOver = checkMate || draw;
-
             Object[] moveCommand = null;
             try {
                 moveCommand = processMoves();
@@ -184,13 +180,13 @@ public class GameConnection implements Runnable {
                     } catch (IOException ioe) {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
                     }
-                    
-                    if(g.isWhiteTurn()){
+
+                    if (g.isWhiteTurn()) {
                         System.out.println("White turn");
                     } else {
                         System.out.println("Black turn");
                     }
-                    
+
                     continue;
                 }
 
@@ -270,6 +266,9 @@ public class GameConnection implements Runnable {
                     startTime = System.nanoTime();
                 }
             }
+            checkMate = g.isCheckMate();
+            draw = g.isMandatoryDraw();
+            isOver = checkMate || draw;
         } while (!isOver);
 
         MoveMessage end = new MoveMessage("end", null);

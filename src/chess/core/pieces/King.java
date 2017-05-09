@@ -38,8 +38,8 @@ public class King extends Piece {
             case 0:
             case 1:
                 if (deltaY == 0 || deltaY == 1) {
-                    /*!isTurn handles the case where a king is capturing a piece that is protected by the opposing king. 
-                    Without it, the opposing king's isValidMove() will return false when the attacking king's isMoveIntoCheck() 
+                    /*!isTurn handles the case where a king is capturing a piece that is protected by the opposing king.
+                    Without it, the opposing king's isValidMove() will return false when the attacking king's isMoveIntoCheck()
                     is called if an enemy can move to the contested square.*/
                     boolean isTurn = isTurn(board);
                     Piece victim = board.getPiece(targetXPos, targetYPos);
@@ -140,7 +140,7 @@ public class King extends Piece {
             return false;
         }
         //Check if the king has any valid moves
-        return hasValidMoves(board);
+        return !hasValidMoves(board);
     }
 
     //check all possible moves to see if there is a valid move
