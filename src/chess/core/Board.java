@@ -137,12 +137,16 @@ public class Board {
                     //move the rook; the king was already moved
                     if (move.TARGET_X == 2) {
                         //queen-side castle
-                        BOARD[3][move.TARGET_Y] = BOARD[0][move.TARGET_Y];
+                        Piece rook = BOARD[0][move.TARGET_Y];
+                        BOARD[3][move.TARGET_Y] = rook;
                         BOARD[0][move.TARGET_Y] = null;
+                        rook.setXPos(3);
                     } else {
                         //king-side castle
-                        BOARD[5][move.TARGET_Y] = BOARD[7][move.TARGET_Y];
+                        Piece rook = BOARD[7][move.TARGET_Y];
+                        BOARD[5][move.TARGET_Y] = rook;
                         BOARD[7][move.TARGET_Y] = null;
+                        rook.setXPos(5);
                     }
                 }
             }
