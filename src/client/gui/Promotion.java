@@ -9,8 +9,10 @@ import chess.core.pieces.Pawn;
 import chess.core.pieces.Piece;
 import client.Client;
 import communication.MoveMessage;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.logging.Level;
@@ -45,6 +47,8 @@ public class Promotion extends javax.swing.JFrame {
         initComponents();
         setButtons(color);
 
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
 
     private void setButtons(String color) {
