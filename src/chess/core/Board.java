@@ -70,12 +70,9 @@ public class Board {
         if (piece == null || (isWhiteTurn && piece.getColor().equalsIgnoreCase("black")) || (!isWhiteTurn && piece.getColor().equalsIgnoreCase("white"))) {
             return false;
         }
-        //if the king is in check, ensure that he is not in check after the move
-        boolean isValid = piece.isValidMove(this, move.TARGET_X, move.TARGET_Y);
-        if (inCheck && isValid) {
-            King king = piece.getColor().equalsIgnoreCase("white") ? whiteKing : blackKing;
-            isValid = !king.isCheckAfterMove(this, move);
-        }
+        //Check if the move is valid for the piece and ensure that the king is not in check after the move
+        King king = piece.getColor().equalsIgnoreCase("white") ? whiteKing : blackKing;
+        boolean isValid = piece.isValidMove(this, move.TARGET_X, move.TARGET_Y) && !king.isCheckAfterMove(this, move);
         //Make the requested move if it is valid
         if (isValid) {
             //Move the piece
@@ -144,7 +141,7 @@ public class Board {
                     }
                 }
             }
-            King king = piece.getColor().equalsIgnoreCase("white") ? blackKing : whiteKing;
+            king = piece.getColor().equalsIgnoreCase("white") ? blackKing : whiteKing;
             inCheck = king.isInCheck(this);
             if (!promotionInProgress) {
                 isWhiteTurn = !isWhiteTurn;
@@ -511,14 +508,14 @@ public class Board {
                         return false;
                     }
                 } else if (attackingPiece instanceof Rook) {
-                    if ((attackingPiece.isHorizontal(kingXPos, kingYPos) && friendlyPiece.canBlockHorizontally(this, move))
-                            || attackingPiece.isVertical(kingXPos, kingYPos) && friendlyPiece.canBlockVertically(this, move)) {
+                    if ((attackingPiece.isHorizontal(kingXPos, kingYPos) && friendlyPiece.canBlockHorizontally(this, move) && !king.isCheckAfterMove(this, move))
+                            || attackingPiece.isVertical(kingXPos, kingYPos) && friendlyPiece.canBlockVertically(this, move) && !king.isCheckAfterMove(this, move)) {
                         return false;
                     }
                 } else if (attackingPiece instanceof Queen) {
                     if (friendlyPiece.canBlockDiagonally(this, move)
-                            || attackingPiece.isHorizontal(kingXPos, kingYPos) && friendlyPiece.canBlockHorizontally(this, move)
-                            || attackingPiece.isVertical(kingXPos, kingYPos) && friendlyPiece.canBlockVertically(this, move)) {
+                            || (attackingPiece.isHorizontal(kingXPos, kingYPos) && friendlyPiece.canBlockHorizontally(this, move) && !king.isCheckAfterMove(this, move))
+                            || (attackingPiece.isVertical(kingXPos, kingYPos) && friendlyPiece.canBlockVertically(this, move)) && !king.isCheckAfterMove(this, move)) {
                         return false;
                     }
                 }
