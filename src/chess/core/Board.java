@@ -88,6 +88,11 @@ public class Board {
             BOARD[move.TARGET_X][move.TARGET_Y] = piece;
             piece.setXPos(move.TARGET_X);
             piece.setYPos(move.TARGET_Y);
+            if (piece instanceof King) {
+                ((King) piece).setHasMoved(true);
+            } else if (piece instanceof Rook) {
+                ((Rook) piece).setHasMoved(true);
+            }
             ++moveCount;
 
             //update the state count

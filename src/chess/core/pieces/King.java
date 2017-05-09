@@ -46,7 +46,6 @@ public class King extends Piece {
                     if (!isTurn && victim != null && victim instanceof King) {
                         return true;
                     } else if (!isCheckAfterMove(board, new Move(xPos, yPos, targetXPos, targetYPos))) {
-                        hasMoved = true;
                         return true;
                     }
                 } else {
@@ -67,7 +66,7 @@ public class King extends Piece {
                         }
                     }
                     rook = board.getPiece(0, yPos);
-                    return rook != null && rook instanceof Rook && !((Rook) rook).hasMoved() && !isBlockedHorizontally(board, 0);
+                    return rook != null && rook instanceof Rook && !((Rook) rook).getHasMoved() && !isBlockedHorizontally(board, 0);
                 } //king-side castle
                 else {
                     //if the king is in check, will pass through check, or will be in check after moving, he cannot castle
@@ -77,7 +76,7 @@ public class King extends Piece {
                         }
                     }
                     rook = board.getPiece(7, yPos);
-                    return rook != null && rook instanceof Rook && !((Rook) rook).hasMoved() && !isBlockedHorizontally(board, 7);
+                    return rook != null && rook instanceof Rook && !((Rook) rook).getHasMoved() && !isBlockedHorizontally(board, 7);
                 }
             default:
                 //invalid isValidMove
@@ -138,5 +137,23 @@ public class King extends Piece {
             }
         }
         return false;
+    }
+
+    /**
+     * Sets hasMoved to the given value
+     *
+     * @param hasMoved the value to use for hasMoved
+     */
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
+    }
+
+    /**
+     * Checks if the king has moved
+     *
+     * @return true if the king has moved and false otherwise
+     */
+    public boolean getHasMoved() {
+        return hasMoved;
     }
 }

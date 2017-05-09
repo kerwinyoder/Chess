@@ -32,7 +32,6 @@ public class Rook extends Piece {
             return false;
         }
         if ((isHorizontal(targetXPos, targetYPos) && !isBlockedHorizontally(board, targetXPos)) || isVertical(targetXPos, targetYPos) && !isBlockedVertically(board, targetYPos)) {
-            hasMoved = true;
             return true;
         }
         return false;
@@ -43,8 +42,17 @@ public class Rook extends Piece {
      *
      * @return true if the rook has moved since the start of the game
      */
-    public boolean hasMoved() {
+    public boolean getHasMoved() {
         return hasMoved;
+    }
+
+    /**
+     * Sets hasMoved to the given value
+     *
+     * @param hasMoved the value to use for hasMoved
+     */
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
     }
 
     @Override
