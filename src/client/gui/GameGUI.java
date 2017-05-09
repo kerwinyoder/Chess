@@ -385,16 +385,24 @@ public class GameGUI extends javax.swing.JFrame {
                     Integer[] t = m.getTarget();
                     switch (m.getChoice()) {
                         case "Q":
-                            pieces[t[1]][t[0]] = new Queen(t[1], t[0], m.getColor(), "queen");
+                            Queen q = new Queen(t[1], t[0], m.getColor(), "queen");
+                            pieces[t[0]][t[1]] = null;
+                            pieces[t[0]][t[1]] = q;
                             break;
                         case "R":
-                            pieces[t[1]][t[0]] = new Rook(t[1], t[0], m.getColor(), "rook");
+                            Rook r = new Rook(t[1], t[0], m.getColor(), "rook");
+                            pieces[t[0]][t[1]] = null;
+                            pieces[t[0]][t[1]] = r;
                             break;
                         case "B":
-                            pieces[t[1]][t[0]] = new Bishop(t[1], t[0], m.getColor(), "bishop");
+                            Bishop b = new Bishop(t[1], t[0], m.getColor(), "bishop");
+                            pieces[t[0]][t[1]]  = null;
+                            pieces[t[0]][t[1]]  = b;
                             break;
                         case "N":
-                            pieces[t[1]][t[0]] = new Knight(t[1], t[0], m.getColor(), "knight");
+                            Knight k = new Knight(t[1], t[0], m.getColor(), "knight");
+                            pieces[t[0]][t[1]] = null;
+                            pieces[t[0]][t[1]] = k;
                             break;
                     }
                     myTurn = !myTurn;
