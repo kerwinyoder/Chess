@@ -37,7 +37,7 @@ import javax.swing.border.LineBorder;
  * @author djfearon0
  */
 public class GameGUI extends javax.swing.JFrame {
-    
+
     private boolean myTurn = false;
     private boolean firstTurn = true;
     private int[] moveFrom;
@@ -45,7 +45,7 @@ public class GameGUI extends javax.swing.JFrame {
     private int timesClicked;
     private long myTime;
     private long opponentTime;
-    
+
     private ActionListener buttons;
     private static Client client;
     private final Color darkCell = new Color(74, 165, 74);
@@ -63,6 +63,7 @@ public class GameGUI extends javax.swing.JFrame {
      */
     public GameGUI(Client c) {
         initComponents();
+        this.setTitle("Chess - Game");
         client = c;
         game = new Board();
         pieces = game.getBoard();
@@ -78,7 +79,7 @@ public class GameGUI extends javax.swing.JFrame {
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         makeButtons();
         drawPieces();
-        
+
         repaint();
     }
 
@@ -224,7 +225,7 @@ public class GameGUI extends javax.swing.JFrame {
             Integer[] move = {moveFrom[0], moveFrom[1], moveTo[0], moveTo[1]};
             MoveMessage m = new MoveMessage("move", null);
             m.setMove(move);
-            
+
             try {
                 ObjectOutputStream output = new ObjectOutputStream(client.socket.getOutputStream());
                 output.writeObject(m);
@@ -232,7 +233,7 @@ public class GameGUI extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             unHighlight();
             moveFrom = null;
             moveTo = null;
@@ -287,7 +288,7 @@ public class GameGUI extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void drawPieces() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -305,7 +306,7 @@ public class GameGUI extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private void makeButtons() {
         int c = 0;
         for (int i = 0; i < 8; i++) {
@@ -350,7 +351,7 @@ public class GameGUI extends javax.swing.JFrame {
         Integer[] move = m.getMove();
         if (move[0] != -1) {
             if (m.getValid()) {
-                
+
                 Piece curr = pieces[move[1]][move[0]];
                 pieces[move[3]][move[2]] = curr;
                 if (curr.getType().equals("king")) {
@@ -368,10 +369,9 @@ public class GameGUI extends javax.swing.JFrame {
             }
         }
         if (m.getValid()) {
-            
+
             if (m.getEnPassant()) {
                 Integer[] target = m.getTarget();
-                System.out.println(target[0] + " " + target[1]);
                 pieces[target[0]][target[1]] = null;
             }
             if (m.getPromotion()) {
@@ -416,6 +416,10 @@ public class GameGUI extends javax.swing.JFrame {
             } else {
                 myTurn = !myTurn;
             }
+            if (m.isInCheck() != false) {
+                jTextField1.setForeground(Color.RED);
+                jTextField1.setText("In Check!");
+            }
         } else {
             jTextField1.setForeground(Color.RED);
             jTextField1.setText("Invalid Move!");
@@ -423,7 +427,7 @@ public class GameGUI extends javax.swing.JFrame {
         drawPieces();
         repaint();
     }
-    
+
     public void promotePawn(Integer[] t, String choice) {
         switch (choice) {
             case "Q":
@@ -464,13 +468,11 @@ public class GameGUI extends javax.swing.JFrame {
                 jTextField1.setForeground(Color.BLUE);
                 jTextField1.setText("Your turn!");
             }
-        } else {
-            if (m.getValid()) {
-                myTime += time;
-                jLabel3.setText(parseTime(0));
-                jTextField1.setForeground(Color.BLUE);
-                jTextField1.setText("Opponent's turn!");
-            }
+        } else if (m.getValid()) {
+            myTime += time;
+            jLabel3.setText(parseTime(0));
+            jTextField1.setForeground(Color.BLUE);
+            jTextField1.setText("Opponent's turn!");
         }
     }
 
@@ -502,7 +504,7 @@ public class GameGUI extends javax.swing.JFrame {
     public boolean colorSet() {
         return color != null;
     }
-    
+
     public void printEnd(MoveMessage m) {
         switch (m.getReason()) {
             case "checkmate":
@@ -520,7 +522,7 @@ public class GameGUI extends javax.swing.JFrame {
                 break;
         }
     }
-    
+
     private int[] getButton(JButton b) {
         int[] click = new int[2];
         for (int i = 0; i < 8; i++) {
@@ -534,7 +536,7 @@ public class GameGUI extends javax.swing.JFrame {
         }
         return click;
     }
-    
+
     private int[] unHighlight() {
         int[] click = new int[2];
         for (int i = 0; i < 8; i++) {
@@ -546,7 +548,7 @@ public class GameGUI extends javax.swing.JFrame {
         timesClicked = 0;
         return click;
     }
-    
+
     private String parseTime(int p) {
         String t = "";
         StringBuilder sb = new StringBuilder();
@@ -582,17 +584,17 @@ public class GameGUI extends javax.swing.JFrame {
         }
         return t;
     }
-    
+
     private String getPieceCode(Piece p) {
         String code = null;
         boolean c;
-        
+
         if (p.getColor().equals("white")) {
             c = true;
         } else {
             c = false;
         }
-        
+
         switch (p.getType()) {
             case "king":
                 if (c) {
@@ -636,7 +638,7 @@ public class GameGUI extends javax.swing.JFrame {
                     code = "\u265F";
                 }
                 break;
-            
+
         }
         return code;
     }

@@ -34,7 +34,7 @@ public class RequestGUI extends javax.swing.JFrame {
         this.m = m;
         gSock = c.socket;
         updateRequest();
-        this.setTitle("Game Request");
+        this.setTitle("Chess - Game Request");
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }

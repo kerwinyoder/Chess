@@ -16,6 +16,7 @@ public class HelpGUI extends javax.swing.JFrame {
      */
     public HelpGUI() {
         initComponents();
+        this.setTitle("Chess - Help");
     }
 
     /**

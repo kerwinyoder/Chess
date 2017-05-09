@@ -19,7 +19,7 @@ public class RejectedGUI extends javax.swing.JFrame {
      */
     public RejectedGUI() {
         initComponents();
-        this.setTitle("Request Denied");
+        this.setTitle("Chess - Request Denied");
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }

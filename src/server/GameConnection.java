@@ -121,8 +121,6 @@ public class GameConnection implements Runnable {
         long startTime = System.nanoTime();
         do {
 
-            Piece[][] b = g.getBoard();
-
             Object[] moveCommand = null;
             try {
                 moveCommand = processMoves();
@@ -181,12 +179,6 @@ public class GameConnection implements Runnable {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
                     }
 
-                    if (g.isWhiteTurn()) {
-                        System.out.println("White turn");
-                    } else {
-                        System.out.println("Black turn");
-                    }
-
                     continue;
                 }
 
@@ -229,11 +221,19 @@ public class GameConnection implements Runnable {
                             target = new Integer[]{move[3], move[0]};
                             mm.setTarget(target);
                         }
-                        if (p1Color.equals("white") && g.isWhiteTurn() && g.getPromotionInProgress()) {
-                            mm.isPromotion();
-                        } else if (p1Color.equals("black") && !g.isWhiteTurn() && g.getPromotionInProgress()) {
-                            mm.isPromotion();
+                        
+                        if (p1Color.equals("white") && g.isWhiteTurn()) {
+                            if (g.getPromotionInProgress()) {
+                                mm.isPromotion();
+                            } else if (p1Color.equals("black") && !g.isWhiteTurn() && g.getPromotionInProgress()) {
+                                mm.isPromotion();
+                            }
+                            
+                            if(g.isInCheck()){
+                                mm.setInCheck();
+                            }
                         }
+
                         mm.setTime(timeTaken);
                         mm.setMove(move);
                         p1Out = new ObjectOutputStream(player1.getOutputStream());
@@ -250,10 +250,16 @@ public class GameConnection implements Runnable {
                             target = new Integer[]{move[3], move[0]};
                             mm.setTarget(target);
                         }
-                        if (p2Color.equals("white") && g.isWhiteTurn() && g.getPromotionInProgress()) {
-                            mm.isPromotion();
-                        } else if (p2Color.equals("black") && !g.isWhiteTurn() && g.getPromotionInProgress()) {
-                            mm.isPromotion();
+                        if (p2Color.equals("white") && g.isWhiteTurn()) {
+                            if (g.getPromotionInProgress()) {
+                                mm.isPromotion();
+                            } else if (p2Color.equals("black") && !g.isWhiteTurn() && g.getPromotionInProgress()) {
+                                mm.isPromotion();
+                            }
+                            
+                            if(g.isInCheck()){
+                                mm.setInCheck();
+                            }
                         }
                         mm.setTime(timeTaken);
                         mm.setMove(move);

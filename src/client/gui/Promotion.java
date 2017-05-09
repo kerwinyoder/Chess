@@ -40,7 +40,7 @@ public class Promotion extends javax.swing.JFrame {
         this.color = this.piece.getColor();
         this.y = this.piece.getYPos();
         this.x = this.piece.getXPos();
-        this.setTitle("Promotion!");
+        this.setTitle("Chess - Promotion!");
         client = c;
         this.gg = gg;
 

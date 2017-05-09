@@ -103,7 +103,6 @@ public class LobbyGUI extends javax.swing.JFrame {
         if (!jList1.isSelectionEmpty()) {
             String ip = jList1.getSelectedValue().toString();
             if (ip != null) {
-                System.out.println("Sending request to: " + ip);
                 Message m = new Message("request", null);
                 m.setSendingIP(localIP);
                 m.setRequestedIP(ip);

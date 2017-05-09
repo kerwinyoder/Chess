@@ -15,6 +15,7 @@ public class MoveMessage extends Message implements Serializable {
 
     private Integer[] move;
     private Integer[] target;
+    private boolean check = false;
     private boolean enPassant = false;
     private boolean promotion = false;
     private boolean valid = false;
@@ -25,7 +26,16 @@ public class MoveMessage extends Message implements Serializable {
     public MoveMessage(String h, Object b) {
         super(h, b);
     }
+    
+    public void setInCheck(){
+        check = true;
+    }
+    
+    public boolean isInCheck(){
+        return check;
+    }
 
+    /* Move methods */
     public void setMove(Integer[] i) {
         move = i;
     }
@@ -41,7 +51,10 @@ public class MoveMessage extends Message implements Serializable {
     public boolean getValid() {
         return valid;
     }
+    /* End move methods */
 
+    
+    /* Server time setting */
     public void setTime(long t) {
         timeTaken = t;
     }
@@ -49,7 +62,10 @@ public class MoveMessage extends Message implements Serializable {
     public long getTime() {
         return timeTaken;
     }
-
+    /* End server time setting */
+    
+    
+    /* End game reasons */
     public void setReason(String r) {
         reason = r;
     }
@@ -57,6 +73,7 @@ public class MoveMessage extends Message implements Serializable {
     public String getReason() {
         return reason;
     }
+    /* End of reasons */
 
 
     /*Start promotion logic*/
