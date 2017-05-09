@@ -406,7 +406,9 @@ public class GameGUI extends javax.swing.JFrame {
                             pieces[t[0]][t[1]] = k;
                             break;
                     }
-                    p.dispose();
+                    if (p != null) {
+                        p.dispose();
+                    }
                     if (m.getColor().equals(color)) {
                         myTurn = !myTurn;
                     }
