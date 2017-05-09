@@ -166,14 +166,14 @@ public class GameConnection implements Runnable {
 
                     try {
                         p1Out = new ObjectOutputStream(player1.getOutputStream());
-                        p1Out.writeObject(mm);
+                        p1Out.writeUnshared(mm);
                         p1Out.flush();
                     } catch (IOException ioe) {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
                     }
                     try {
                         p2Out = new ObjectOutputStream(player2.getOutputStream());
-                        p2Out.writeObject(mm);
+                        p2Out.writeUnshared(mm);
                         p2Out.flush();
                     } catch (IOException ioe) {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
@@ -190,7 +190,7 @@ public class GameConnection implements Runnable {
                                 MoveMessage mm = new MoveMessage("board", null);
                                 mm.setMove(move);
                                 p1Out = new ObjectOutputStream(player1.getOutputStream());
-                                p1Out.writeObject(mm);
+                                p1Out.writeUnshared(mm);
                                 p1Out.flush();
                             } catch (IOException ioe) {
                                 Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
@@ -201,7 +201,7 @@ public class GameConnection implements Runnable {
                                 MoveMessage mm = new MoveMessage("board", null);
                                 mm.setMove(move);
                                 p2Out = new ObjectOutputStream(player2.getOutputStream());
-                                p2Out.writeObject(mm);
+                                p2Out.writeUnshared(mm);
                                 p2Out.flush();
                             } catch (IOException ioe) {
                                 Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
@@ -221,15 +221,19 @@ public class GameConnection implements Runnable {
                             target = new Integer[]{move[3], move[0]};
                             mm.setTarget(target);
                         }
-                        
+
                         if (p1Color.equals("white") && g.isWhiteTurn()) {
                             if (g.getPromotionInProgress()) {
                                 mm.isPromotion();
-                            } else if (p1Color.equals("black") && !g.isWhiteTurn() && g.getPromotionInProgress()) {
+                            }
+                            if (g.isInCheck()) {
+                                mm.setInCheck();
+                            }
+                        } else if (p1Color.equals("black") && !g.isWhiteTurn()) {
+                            if (g.getPromotionInProgress()) {
                                 mm.isPromotion();
                             }
-                            
-                            if(g.isInCheck()){
+                            if (g.isInCheck()) {
                                 mm.setInCheck();
                             }
                         }
@@ -237,7 +241,7 @@ public class GameConnection implements Runnable {
                         mm.setTime(timeTaken);
                         mm.setMove(move);
                         p1Out = new ObjectOutputStream(player1.getOutputStream());
-                        p1Out.writeObject(mm);
+                        p1Out.writeUnshared(mm);
                         p1Out.flush();
                     } catch (IOException ioe) {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
@@ -253,18 +257,22 @@ public class GameConnection implements Runnable {
                         if (p2Color.equals("white") && g.isWhiteTurn()) {
                             if (g.getPromotionInProgress()) {
                                 mm.isPromotion();
-                            } else if (p2Color.equals("black") && !g.isWhiteTurn() && g.getPromotionInProgress()) {
+                            }
+                            if (g.isInCheck()) {
+                                mm.setInCheck();
+                            }
+                        } else if (p2Color.equals("black") && !g.isWhiteTurn()) {
+                            if (g.getPromotionInProgress()) {
                                 mm.isPromotion();
                             }
-                            
-                            if(g.isInCheck()){
+                            if (g.isInCheck()) {
                                 mm.setInCheck();
                             }
                         }
                         mm.setTime(timeTaken);
                         mm.setMove(move);
                         p2Out = new ObjectOutputStream(player2.getOutputStream());
-                        p2Out.writeObject(mm);
+                        p2Out.writeUnshared(mm);
                         p2Out.flush();
                     } catch (IOException ioe) {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);

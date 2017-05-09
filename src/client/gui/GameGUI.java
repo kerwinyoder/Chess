@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +41,7 @@ public class GameGUI extends javax.swing.JFrame {
 
     private boolean myTurn = false;
     private boolean firstTurn = true;
+    private boolean check = false;
     private int[] moveFrom;
     private int[] moveTo;
     private int timesClicked;
@@ -327,7 +329,7 @@ public class GameGUI extends javax.swing.JFrame {
                             if (moveFrom == null) {
                                 moveFrom = click;
                                 timesClicked++;
-                            } else if (moveFrom != null && moveTo == null) {
+                            } else if (moveFrom != null && moveTo == null && !Arrays.equals(moveFrom, click)) {
                                 moveTo = click;
                                 timesClicked++;
                             }
@@ -417,8 +419,7 @@ public class GameGUI extends javax.swing.JFrame {
                 myTurn = !myTurn;
             }
             if (m.isInCheck() != false) {
-                jTextField1.setForeground(Color.RED);
-                jTextField1.setText("In Check!");
+                check = true;
             }
         } else {
             jTextField1.setForeground(Color.RED);
@@ -462,6 +463,10 @@ public class GameGUI extends javax.swing.JFrame {
                     jTextField1.setText("Invalid Move!");
                 }
                 firstTurn = false;
+            } else if (check) {
+                jTextField1.setForeground(Color.RED);
+                jTextField1.setText("In Check!");
+                check = false;
             } else {
                 opponentTime += time;
                 jLabel5.setText(parseTime(1));
