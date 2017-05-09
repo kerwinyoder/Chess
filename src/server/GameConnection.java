@@ -158,26 +158,28 @@ public class GameConnection implements Runnable {
 
                     g.promotePawn(p, choice);
 
+                    MoveMessage mm = new MoveMessage("board", null);
+                    mm.isPromotion();
+                    mm.isValid();
+                    mm.setTarget(target);
+                    mm.setChoice(choice);
+                    if (s.equals(player1)) {
+                        mm.setColor(p1Color);
+                    } else {
+                        mm.setColor(p2Color);
+                    }
+                    mm.setMove(new Integer[]{-1, -1});
+
                     try {
-                        MoveMessage mm = new MoveMessage("board", null);
-                        mm.isPromotion();
-                        mm.isValid();
-                        mm.setTarget(target);
-                        mm.setChoice(choice);
                         p1Out = new ObjectOutputStream(player1.getOutputStream());
-                        p1Out.writeUnshared(mm);
+                        p1Out.writeObject(mm);
                         p1Out.flush();
                     } catch (IOException ioe) {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
                     }
                     try {
-                        MoveMessage mm = new MoveMessage("board", null);
-                        mm.isPromotion();
-                        mm.isValid();
-                        mm.setTarget(target);
-                        mm.setChoice(choice);
                         p2Out = new ObjectOutputStream(player2.getOutputStream());
-                        p2Out.writeUnshared(mm);
+                        p2Out.writeObject(mm);
                         p2Out.flush();
                     } catch (IOException ioe) {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);

@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 public class Promotion extends javax.swing.JFrame {
 
     private static Client client;
+    private static GameGUI gg;
     private static Pawn piece;
     private int y;
     private int x;
@@ -32,13 +33,14 @@ public class Promotion extends javax.swing.JFrame {
     /**
      * Creates new form Promotion
      */
-    public Promotion(Pawn piece, Client c) {
+    public Promotion(Pawn piece, Client c, GameGUI gg) {
         this.piece = piece;
         this.color = this.piece.getColor();
         this.y = this.piece.getYPos();
         this.x = this.piece.getXPos();
         this.setTitle("Promotion!");
         client = c;
+        this.gg = gg;
 
         initComponents();
         setButtons(color);
@@ -161,21 +163,29 @@ public class Promotion extends javax.swing.JFrame {
     private void jButtonBishopPromoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBishopPromoActionPerformed
         this.returnType = "bishop";
         sendType("B");
+        Integer[] t = new Integer[] {this.x, this.y};
+        gg.promotePawn(t, color);
     }//GEN-LAST:event_jButtonBishopPromoActionPerformed
 
     private void jButtonKnightPromoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonKnightPromoActionPerformed
         this.returnType = "knight";
         sendType("N");
+        Integer[] t = new Integer[] {this.x, this.y};
+        gg.promotePawn(t, color);
     }//GEN-LAST:event_jButtonKnightPromoActionPerformed
 
     private void jButtonQueenPromoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonQueenPromoActionPerformed
         this.returnType = "queen";
         sendType("Q");
+        Integer[] t = new Integer[] {this.x, this.y};
+        gg.promotePawn(t, color);
     }//GEN-LAST:event_jButtonQueenPromoActionPerformed
 
     private void jButtonRookPromoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRookPromoActionPerformed
         this.returnType = "rook";
         sendType("R");
+        Integer[] t = new Integer[] {this.x, this.y};
+        gg.promotePawn(t, color);
     }//GEN-LAST:event_jButtonRookPromoActionPerformed
 
     private void sendType(String type) {
@@ -225,7 +235,7 @@ public class Promotion extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Promotion(piece, client).setVisible(true);
+                new Promotion(piece, client, gg).setVisible(true);
             }
         });
     }

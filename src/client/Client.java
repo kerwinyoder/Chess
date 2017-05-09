@@ -91,6 +91,9 @@ public class Client {
                 switch (m.getHeader()) {
                     case "board"://Update the board of the game gui
                         MoveMessage mm = (MoveMessage) om;
+                        if(mm.getTarget() != null && mm.getPromotion() == true){
+                            System.out.println("Promotion!");
+                        }
                         if (game != null) {
                             if (mm.getMove() != null) {
                                 game.updateBoard(mm);

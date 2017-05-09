@@ -347,22 +347,26 @@ public class GameGUI extends javax.swing.JFrame {
      */
     public void updateBoard(MoveMessage m) {
         Integer[] move = m.getMove();
-        if (m.getValid()) {
+        if (move[0] != -1) {
+            if (m.getValid()) {
 
-            Piece curr = pieces[move[1]][move[0]];
-            pieces[move[3]][move[2]] = curr;
-            if (curr.getType().equals("king")) {
-                if (Math.abs(move[3] - move[1]) == 2) {
-                    if (move[3] == 2) {
-                        pieces[3][move[2]] = pieces[0][move[2]];
-                        pieces[0][move[2]] = null;
-                    } else {
-                        pieces[5][move[2]] = pieces[7][move[2]];
-                        pieces[7][move[2]] = null;
+                Piece curr = pieces[move[1]][move[0]];
+                pieces[move[3]][move[2]] = curr;
+                if (curr.getType().equals("king")) {
+                    if (Math.abs(move[3] - move[1]) == 2) {
+                        if (move[3] == 2) {
+                            pieces[3][move[2]] = pieces[0][move[2]];
+                            pieces[0][move[2]] = null;
+                        } else {
+                            pieces[5][move[2]] = pieces[7][move[2]];
+                            pieces[7][move[2]] = null;
+                        }
                     }
                 }
+                pieces[move[1]][move[0]] = null;
             }
-            pieces[move[1]][move[0]] = null;
+        }
+        if (m.getValid()) {
 
             if (m.getEnPassant()) {
                 Integer[] target = m.getTarget();
@@ -374,7 +378,7 @@ public class GameGUI extends javax.swing.JFrame {
                     Pawn pawn = (Pawn) pieces[move[3]][move[2]];
                     pawn.setXPos(move[3]);
                     pawn.setYPos(move[2]);
-                    Promotion p = new Promotion(pawn, client);
+                    Promotion p = new Promotion(pawn, client, this);
                     p.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     p.setVisible(true);
                 } else {
@@ -404,6 +408,23 @@ public class GameGUI extends javax.swing.JFrame {
         }
         drawPieces();
         repaint();
+    }
+
+    public void promotePawn(Integer[] t, String choice) {
+        switch (choice) {
+            case "Q":
+                pieces[t[1]][t[0]] = new Queen(t[1], t[0], color, "queen");
+                break;
+            case "R":
+                pieces[t[1]][t[0]] = new Rook(t[1], t[0], color, "rook");
+                break;
+            case "B":
+                pieces[t[1]][t[0]] = new Bishop(t[1], t[0], color, "bishop");
+                break;
+            case "N":
+                pieces[t[1]][t[0]] = new Knight(t[1], t[0], color, "knight");
+                break;
+        }
     }
 
     /**
