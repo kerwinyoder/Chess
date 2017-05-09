@@ -297,6 +297,7 @@ public class Board {
         }
         BOARD[move.TARGET_X][move.TARGET_Y] = newPiece;
         promotionInProgress = false;
+        isWhiteTurn = !isWhiteTurn;
     }
 
     /*

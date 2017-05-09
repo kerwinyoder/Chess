@@ -184,6 +184,13 @@ public class GameConnection implements Runnable {
                     } catch (IOException ioe) {
                         Logger.getLogger(GameConnection.class.getName()).log(Level.SEVERE, null, ioe);
                     }
+                    
+                    if(g.isWhiteTurn()){
+                        System.out.println("White turn");
+                    } else {
+                        System.out.println("Black turn");
+                    }
+                    
                     continue;
                 }
 

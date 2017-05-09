@@ -37,7 +37,7 @@ import javax.swing.border.LineBorder;
  * @author djfearon0
  */
 public class GameGUI extends javax.swing.JFrame {
-
+    
     private boolean myTurn = false;
     private boolean firstTurn = true;
     private int[] moveFrom;
@@ -45,7 +45,7 @@ public class GameGUI extends javax.swing.JFrame {
     private int timesClicked;
     private long myTime;
     private long opponentTime;
-
+    
     private ActionListener buttons;
     private static Client client;
     private final Color darkCell = new Color(74, 165, 74);
@@ -54,6 +54,7 @@ public class GameGUI extends javax.swing.JFrame {
     private static String color;
     private Piece[][] pieces;
     private Board game;
+    private Promotion p;
 
     /**
      * Creates new form GameGUI
@@ -77,7 +78,7 @@ public class GameGUI extends javax.swing.JFrame {
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         makeButtons();
         drawPieces();
-
+        
         repaint();
     }
 
@@ -223,7 +224,7 @@ public class GameGUI extends javax.swing.JFrame {
             Integer[] move = {moveFrom[0], moveFrom[1], moveTo[0], moveTo[1]};
             MoveMessage m = new MoveMessage("move", null);
             m.setMove(move);
-
+            
             try {
                 ObjectOutputStream output = new ObjectOutputStream(client.socket.getOutputStream());
                 output.writeObject(m);
@@ -231,7 +232,7 @@ public class GameGUI extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
             unHighlight();
             moveFrom = null;
             moveTo = null;
@@ -286,7 +287,7 @@ public class GameGUI extends javax.swing.JFrame {
             }
         });
     }
-
+    
     private void drawPieces() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -304,7 +305,7 @@ public class GameGUI extends javax.swing.JFrame {
             }
         }
     }
-
+    
     private void makeButtons() {
         int c = 0;
         for (int i = 0; i < 8; i++) {
@@ -349,7 +350,7 @@ public class GameGUI extends javax.swing.JFrame {
         Integer[] move = m.getMove();
         if (move[0] != -1) {
             if (m.getValid()) {
-
+                
                 Piece curr = pieces[move[1]][move[0]];
                 pieces[move[3]][move[2]] = curr;
                 if (curr.getType().equals("king")) {
@@ -367,7 +368,7 @@ public class GameGUI extends javax.swing.JFrame {
             }
         }
         if (m.getValid()) {
-
+            
             if (m.getEnPassant()) {
                 Integer[] target = m.getTarget();
                 System.out.println(target[0] + " " + target[1]);
@@ -378,8 +379,8 @@ public class GameGUI extends javax.swing.JFrame {
                     Pawn pawn = (Pawn) pieces[move[3]][move[2]];
                     pawn.setXPos(move[3]);
                     pawn.setYPos(move[2]);
-                    Promotion p = new Promotion(pawn, client, this);
-                    p.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    p = new Promotion(pawn, client, this);
+                    p.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                     p.setVisible(true);
                 } else {
                     Integer[] t = m.getTarget();
@@ -396,8 +397,8 @@ public class GameGUI extends javax.swing.JFrame {
                             break;
                         case "B":
                             Bishop b = new Bishop(t[1], t[0], m.getColor(), "bishop");
-                            pieces[t[0]][t[1]]  = null;
-                            pieces[t[0]][t[1]]  = b;
+                            pieces[t[0]][t[1]] = null;
+                            pieces[t[0]][t[1]] = b;
                             break;
                         case "N":
                             Knight k = new Knight(t[1], t[0], m.getColor(), "knight");
@@ -405,7 +406,10 @@ public class GameGUI extends javax.swing.JFrame {
                             pieces[t[0]][t[1]] = k;
                             break;
                     }
-                    myTurn = !myTurn;
+                    p.dispose();
+                    if (m.getColor().equals(color)) {
+                        myTurn = !myTurn;
+                    }
                 }
             } else {
                 myTurn = !myTurn;
@@ -417,7 +421,7 @@ public class GameGUI extends javax.swing.JFrame {
         drawPieces();
         repaint();
     }
-
+    
     public void promotePawn(Integer[] t, String choice) {
         switch (choice) {
             case "Q":
@@ -496,7 +500,7 @@ public class GameGUI extends javax.swing.JFrame {
     public boolean colorSet() {
         return color != null;
     }
-
+    
     public void printEnd(MoveMessage m) {
         switch (m.getReason()) {
             case "checkmate":
@@ -514,7 +518,7 @@ public class GameGUI extends javax.swing.JFrame {
                 break;
         }
     }
-
+    
     private int[] getButton(JButton b) {
         int[] click = new int[2];
         for (int i = 0; i < 8; i++) {
@@ -528,7 +532,7 @@ public class GameGUI extends javax.swing.JFrame {
         }
         return click;
     }
-
+    
     private int[] unHighlight() {
         int[] click = new int[2];
         for (int i = 0; i < 8; i++) {
@@ -540,7 +544,7 @@ public class GameGUI extends javax.swing.JFrame {
         timesClicked = 0;
         return click;
     }
-
+    
     private String parseTime(int p) {
         String t = "";
         StringBuilder sb = new StringBuilder();
@@ -576,17 +580,17 @@ public class GameGUI extends javax.swing.JFrame {
         }
         return t;
     }
-
+    
     private String getPieceCode(Piece p) {
         String code = null;
         boolean c;
-
+        
         if (p.getColor().equals("white")) {
             c = true;
         } else {
             c = false;
         }
-
+        
         switch (p.getType()) {
             case "king":
                 if (c) {
@@ -630,7 +634,7 @@ public class GameGUI extends javax.swing.JFrame {
                     code = "\u265F";
                 }
                 break;
-
+            
         }
         return code;
     }
