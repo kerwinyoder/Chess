@@ -108,9 +108,7 @@ public class Client {
                         break;
                     case "list"://Server is distributing the client list
                         LinkedList<String> players = (LinkedList) m.getBody();
-                        if (!players.isEmpty()) {
-                            gui.updateList(players);
-                        }
+                        gui.updateList(players);
                         break;
                     case "request"://Receive a request or decline notification
                         if (m.getRequestSeen() && !m.requestAccepted()) {//Your request was rejected
