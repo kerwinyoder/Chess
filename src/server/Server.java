@@ -156,6 +156,7 @@ public class Server {
                                 outReceiver.writeObject(gameStart);
                                 outSender.flush();
                                 outReceiver.flush();
+                                sendList();
                             } catch (IOException ioe) {
                                 System.out.println("Could not send to either of the clients");
                                 System.out.println("Error: " + ioe.getMessage());
